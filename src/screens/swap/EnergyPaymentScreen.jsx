@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../router/routes";
 
 const evzEnergyPayStyles = `
 :root {
@@ -284,6 +286,7 @@ function EnergyPaymentScreen({
   ratePerKWh = 3500,
 }) {
   useEvzEnergyPayStyles();
+  const navigate = useNavigate();
 
   const [selectedId, setSelectedId] = useState("evz");
 
@@ -293,11 +296,18 @@ function EnergyPaymentScreen({
 
   const handleConfirm = () => {
     if (typeof window !== "undefined") {
-      window.alert(
-        `Paying ${fmtUGX(total)} via ${
-          PAYMENT_METHODS.find((m) => m.id === selectedId)?.label
-        }`
-      );
+      // In a real app, you would process the payment here
+      try {
+        // Save payment info to localStorage if needed
+        window.localStorage.setItem("evz.swap.energy.payment.completed", "true");
+        window.localStorage.setItem("evz.swap.energy.payment.amount", String(total));
+        window.localStorage.setItem("evz.swap.energy.payment.method", selectedId);
+      } catch {
+        // ignore
+      }
+      
+      // Navigate to collect battery screen after payment
+      navigate(ROUTES.COLLECT_NEW_BATTERY_SELF);
     }
   };
 
