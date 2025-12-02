@@ -11,6 +11,7 @@ export const ROUTES = {
   PROFILE_SETUP: '/onboarding/profile',
   VEHICLE_SELECT: '/onboarding/vehicle',
   PROVIDER_SELECT: '/onboarding/provider',
+  PROVIDER_SELECT_ALIAS: '/providers/select', // Alias for PROVIDER_SELECT
   NO_STATIONS_FOUND: '/onboarding/no-stations',
   
   // Stations
@@ -89,11 +90,16 @@ export const ROUTES = {
   
   // Profile
   PROFILE: '/profile',
+  ACCOUNT: '/account', // Alias for PROFILE
+  PROFILE_EDIT: '/profile/edit',
+  PROFILE_EDIT_ACCOUNT: '/account/edit', // Alias for PROFILE_EDIT
   VEHICLE_DETAILS: '/profile/vehicle/:id',
   VEHICLE_EDIT: '/profile/vehicle/:id/edit',
   VEHICLE_REMOVE: '/profile/vehicle/:id/remove',
   LANGUAGE_REGION: '/profile/language',
+  LANGUAGE_REGION_ACCOUNT: '/account/language', // Alias for LANGUAGE_REGION
   NOTIFICATION_SETTINGS: '/profile/notifications',
+  NOTIFICATION_SETTINGS_ACCOUNT: '/account/notifications', // Alias for NOTIFICATION_SETTINGS
   LOCK_WALLET: '/profile/lock-wallet',
   TWO_FACTOR_SETUP: '/profile/2fa',
   SESSION_MANAGEMENT: '/profile/sessions',

@@ -77,6 +77,7 @@ import BatteryHealthDetailScreen from '../screens/dashboard/BatteryHealthDetailS
 
 // Profile screens
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import EditProfileScreen from '../screens/profile/EditProfileScreen';
 import VehicleDetailsScreen from '../screens/profile/VehicleDetailsScreen';
 import VehicleEditScreen from '../screens/profile/VehicleEditScreen';
 import VehicleRemoveConfirmScreen from '../screens/profile/VehicleRemoveConfirmScreen';
@@ -125,6 +126,7 @@ function AppRouter() {
         <Route path={ROUTES.PROFILE_SETUP} element={<ProfileSetupScreen />} />
         <Route path={ROUTES.VEHICLE_SELECT} element={<VehicleSelectScreen />} />
         <Route path={ROUTES.PROVIDER_SELECT} element={<ProviderSelectScreen />} />
+        <Route path={ROUTES.PROVIDER_SELECT_ALIAS} element={<ProviderSelectScreen />} />
         <Route path={ROUTES.NO_STATIONS_FOUND} element={<NoStationsFoundScreen />} />
         
         {/* Stations routes */}
@@ -203,11 +205,16 @@ function AppRouter() {
         
         {/* Profile routes */}
         <Route path={ROUTES.PROFILE} element={<ProfileScreen />} />
+        <Route path={ROUTES.ACCOUNT} element={<ProfileScreen />} />
+        <Route path={ROUTES.PROFILE_EDIT} element={<EditProfileScreen />} />
+        <Route path={ROUTES.PROFILE_EDIT_ACCOUNT} element={<EditProfileScreen />} />
         <Route path={ROUTES.VEHICLE_DETAILS} element={<VehicleDetailsScreen />} />
         <Route path={ROUTES.VEHICLE_EDIT} element={<VehicleEditScreen />} />
         <Route path={ROUTES.VEHICLE_REMOVE} element={<VehicleRemoveConfirmScreen />} />
         <Route path={ROUTES.LANGUAGE_REGION} element={<LanguageRegionScreen />} />
+        <Route path={ROUTES.LANGUAGE_REGION_ACCOUNT} element={<LanguageRegionScreen />} />
         <Route path={ROUTES.NOTIFICATION_SETTINGS} element={<NotificationSettingsScreen />} />
+        <Route path={ROUTES.NOTIFICATION_SETTINGS_ACCOUNT} element={<NotificationSettingsScreen />} />
         <Route path={ROUTES.LOCK_WALLET} element={<LockWalletScreen />} />
         <Route path={ROUTES.TWO_FACTOR_SETUP} element={<TwoFactorSetupScreen />} />
         <Route path={ROUTES.SESSION_MANAGEMENT} element={<SessionManagementScreen />} />

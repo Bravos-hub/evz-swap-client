@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
@@ -269,6 +269,7 @@ const PROVIDERS = [
 export default function ProviderSelectScreen() {
   useEvzStyles();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [selected, setSelected] = useState(() => {
     if (typeof window === "undefined") return "";
@@ -278,6 +279,10 @@ export default function ProviderSelectScreen() {
       return "";
     }
   });
+
+  // Get return path from URL params
+  const searchParams = new URLSearchParams(location.search);
+  const returnTo = searchParams.get("returnTo");
 
   const handlePick = (p) => {
     setSelected(p.id);
@@ -294,15 +299,22 @@ export default function ProviderSelectScreen() {
   const handleContinue = () => {
     if (!selected) return;
     
-    navigate(`${ROUTES.STATION_MAP_LIST}?provider=${encodeURIComponent(selected)}`);
+    // If there's a return path (e.g., from subscription page), navigate back to it
+    if (returnTo) {
+      navigate(returnTo);
+    } else {
+      // Default behavior: navigate to stations
+      navigate(`${ROUTES.STATION_MAP_LIST}?provider=${encodeURIComponent(selected)}`);
+    }
   };
 
-  // const handleViewPlans = () => {
-  //   navigate(ROUTES.PROVIDER_PLANS);
-  // }; // Reserved for future use
-
   const handleBack = () => {
-    navigate(ROUTES.VEHICLE_SELECT);
+    // If there's a return path, go back to it, otherwise go to vehicle select
+    if (returnTo) {
+      navigate(returnTo);
+    } else {
+      navigate(ROUTES.VEHICLE_SELECT);
+    }
   };
 
   return (

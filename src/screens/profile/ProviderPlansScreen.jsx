@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
 :root {
@@ -379,12 +381,27 @@ function EvzScreen({ children }) {
 
 export default function ProviderPlansScreen({ nextPath = "/providers/plans" }) {
   useEvzStyles();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const providerId = get("evz.providerId", "default");
-  const providerName = get("evz.providerName", "Provider");
+  const [providerId, setProviderId] = useState(() => get("evz.providerId", "default"));
+  const [providerName, setProviderName] = useState(() => get("evz.providerName", "Provider"));
   const curr = currency();
 
   const [selected, setSelected] = useState(() => get("evz.provider.planId", ""));
+
+  // Update provider info when returning from provider select
+  useEffect(() => {
+    const currentProviderId = get("evz.providerId", "default");
+    const currentProviderName = get("evz.providerName", "Provider");
+    
+    if (currentProviderId !== providerId) {
+      setProviderId(currentProviderId);
+      setProviderName(currentProviderName);
+      // Reset selected plan when provider changes
+      setSelected("");
+    }
+  }, [location.pathname, providerId]);
 
   const plans = useMemo(() => plansFor(providerId), [providerId]);
 
@@ -398,11 +415,9 @@ export default function ProviderPlansScreen({ nextPath = "/providers/plans" }) {
     set("evz.provider.planId", plan.id);
     set("evz.provider.planName", plan.name);
     set("evz.provider.planSince", Date.now());
-    if (typeof window !== "undefined" && window.alert) {
-      window.alert(`Subscribed to ${plan.name}`);
-    }
-    // Stay on screen, as in original implementation. Consumers can
-    // navigate using nextPath if desired.
+    
+    // Navigate back to profile/account page after subscribing
+    navigate(ROUTES.ACCOUNT);
   };
 
   return (
@@ -461,7 +476,7 @@ export default function ProviderPlansScreen({ nextPath = "/providers/plans" }) {
           <button
             type="button"
             className="evz-btn-secondary"
-            onClick={() => goTo("/providers/select")}
+            onClick={() => navigate(`${ROUTES.PROVIDER_SELECT_ALIAS}?returnTo=${encodeURIComponent(ROUTES.PROVIDER_PLANS)}`)}
           >
             Change provider
           </button>

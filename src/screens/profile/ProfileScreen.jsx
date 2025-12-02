@@ -1,10 +1,26 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import DownloadIcon from '@mui/icons-material/Download';
+import LanguageIcon from '@mui/icons-material/Language';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import HistoryIcon from '@mui/icons-material/History';
+import LogoutIcon from '@mui/icons-material/Logout';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
 :root {
   --evz-primary: #03cd8c;
   --evz-accent: #f77f00;
-  --evz-bg: #ffffff;
+  --evz-bg: #f5f7fb;
+  --evz-surface: #ffffff;
   --evz-surface-soft: #f2f2f2;
   --evz-text-primary: #111827;
   --evz-text-secondary: #6b7280;
@@ -31,286 +47,397 @@ body {
   width: 100%;
   max-width: 420px;
   min-height: 100vh;
-  padding: 24px 20px 20px;
+  padding: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  background: var(--evz-surface);
 }
 
-.evz-header {
-  padding-bottom: 8px;
+.evz-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: var(--evz-surface);
+}
+
+.evz-header-back {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--evz-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -8px;
 }
 
 .evz-header-title {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0 0 4px;
-}
-
-.evz-header-subtitle {
-  font-size: 13px;
-  color: var(--evz-text-secondary);
+  font-size: 18px;
+  font-weight: 700;
   margin: 0;
+  flex: 1;
+  text-align: center;
 }
 
-.evz-divider {
-  height: 1px;
-  width: 100%;
-  background-color: #e5e7eb;
-  margin: 10px 0 0;
+.evz-header-settings {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--evz-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -8px;
 }
 
-.evz-main {
-  padding-top: 10px;
+.evz-profile-section {
+  padding: 24px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.evz-card {
-  border-radius: 16px;
-  background-color: var(--evz-surface-soft);
-  padding: 16px 14px 14px;
+.evz-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .evz-avatar {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border-radius: 999px;
   background-color: var(--evz-primary);
   color: #ffffff;
   font-weight: 800;
-  font-size: 28px;
+  font-size: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 12px;
+  overflow: hidden;
+  position: relative;
 }
 
-.evz-field {
-  margin-bottom: 12px;
-}
-
-.evz-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.evz-input {
+.evz-avatar img {
   width: 100%;
-  border-radius: 12px;
-  border: 1px solid var(--evz-border-subtle);
-  padding: 8px 10px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-.evz-input:focus {
-  outline: none;
-  border-color: rgba(3, 205, 140, 0.9);
-  box-shadow: 0 0 0 1px rgba(3, 205, 140, 0.08);
-}
-
-.evz-input[readonly] {
-  background-color: #f9fafb;
-  color: var(--evz-text-secondary);
-}
-
-.evz-helper {
-  min-height: 16px;
-  margin-top: 3px;
-  font-size: 11px;
-  color: var(--evz-text-secondary);
-}
-
-.evz-helper--error {
-  color: #b91c1c;
-}
-
-.evz-inline-links {
-  margin-top: 20px;
-  display: flex;
-  gap: 8px;
-}
-
-.evz-inline-btn {
-  flex: 1;
+  height: 100%;
+  object-fit: cover;
   border-radius: 999px;
-  border: 1px solid #a6a6a6;
-  padding: 9px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  background-color: #ffffff;
-  color: var(--evz-text-primary);
-  text-align: center;
-  text-decoration: none;
 }
 
-.evz-inline-btn:hover {
-  background-color: #f9fafb;
-}
-
-.evz-footer {
-  margin-top: auto;
-  padding-top: 18px;
-}
-
-.evz-footer-row {
-  display: flex;
-  gap: 8px;
-}
-
-.evz-btn-secondary,
-.evz-btn-primary {
-  flex: 1;
+.evz-avatar-camera {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
-  padding: 11px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-.evz-btn-secondary {
-  border-color: #a6a6a6;
-  background-color: #ffffff;
-  color: var(--evz-text-primary);
-}
-
-.evz-btn-secondary:hover {
-  background-color: #f9fafb;
-}
-
-.evz-btn-primary {
-  border-color: transparent;
   background-color: var(--evz-accent);
   color: #ffffff;
-  box-shadow: 0 10px 22px rgba(247, 127, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--evz-surface);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.evz-btn-primary--disabled {
-  background-color: #a6a6a6;
-  box-shadow: none;
-  cursor: default;
+.evz-avatar-camera svg {
+  font-size: 16px;
 }
 
-.evz-btn-primary:active:not(.evz-btn-primary--disabled) {
-  transform: translateY(1px);
-  box-shadow: 0 6px 14px rgba(247, 127, 0, 0.28);
+.evz-profile-info {
+  flex: 1;
+  min-width: 0;
 }
 
-.evz-signout {
-  width: 100%;
-  margin-top: 8px;
+.evz-profile-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--evz-text-primary);
+}
+
+.evz-profile-email {
+  font-size: 14px;
+  color: var(--evz-text-secondary);
+  margin: 0 0 12px;
+  word-break: break-all;
+}
+
+.evz-edit-profile-btn {
+  background-color: #3b82f6;
+  color: #ffffff;
   border: none;
-  background: none;
-  padding: 10px 4px;
+  border-radius: 8px;
+  padding: 8px 16px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--evz-accent);
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.evz-edit-profile-btn:hover {
+  background-color: #2563eb;
+}
+
+.evz-menu-section {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.evz-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--evz-surface);
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.evz-menu-item:hover {
+  background-color: #f9fafb;
+}
+
+.evz-menu-item:active {
+  background-color: #f3f4f6;
+}
+
+.evz-menu-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--evz-text-secondary);
+  flex-shrink: 0;
+}
+
+.evz-menu-icon svg {
+  font-size: 24px;
+}
+
+.evz-menu-text {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--evz-text-primary);
+}
+
+.evz-menu-arrow {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--evz-text-secondary);
+  flex-shrink: 0;
+}
+
+.evz-menu-arrow svg {
+  font-size: 20px;
+}
+
+.evz-footer-version {
+  padding: 20px;
   text-align: center;
-}
-
-.evz-signout:hover {
-  text-decoration: underline;
-}
-
-.evz-empty-primary {
-  font-size: 14px;
-}
-
-.evz-empty-secondary {
   font-size: 12px;
   color: var(--evz-text-secondary);
-}
-
-.evz-inline-link {
-  color: var(--evz-accent);
-  text-decoration: none;
-}
-
-.evz-inline-link:hover {
-  text-decoration: underline;
+  margin-top: auto;
 }
 
 /* Responsive styles for 320px - 420px range */
 @media (max-width: 420px) {
   .evz-screen {
     max-width: 100%;
-    padding: 20px 16px 16px;
   }
   
-  .evz-header-title {
-    font-size: 20px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 370px) {
-  .evz-screen {
-    padding: 18px 14px 14px;
-  }
-  
-  .evz-header-title {
-    font-size: 19px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 360px) {
-  .evz-screen {
-    padding: 16px 12px 12px;
-  }
-  
-  .evz-header-title {
-    font-size: 18px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 340px) {
-  .evz-screen {
-    padding: 16px 10px 10px;
+  .evz-header-bar {
+    padding: 14px 16px;
   }
   
   .evz-header-title {
     font-size: 17px;
   }
   
-  .evz-header-subtitle {
-    font-size: 10px;
+  .evz-profile-section {
+    padding: 20px 16px;
+  }
+  
+  .evz-avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 28px;
+  }
+  
+  .evz-profile-name {
+    font-size: 18px;
+  }
+  
+  .evz-profile-email {
+    font-size: 13px;
+  }
+  
+  .evz-menu-item {
+    padding: 14px 16px;
+  }
+  
+  .evz-menu-text {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 370px) {
+  .evz-header-bar {
+    padding: 12px 14px;
+  }
+  
+  .evz-header-title {
+    font-size: 16px;
+  }
+  
+  .evz-profile-section {
+    padding: 18px 14px;
+    gap: 12px;
+  }
+  
+  .evz-avatar {
+    width: 68px;
+    height: 68px;
+    font-size: 26px;
+  }
+  
+  .evz-avatar-camera {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+  }
+  
+  .evz-avatar-camera svg {
+    font-size: 14px;
+  }
+  
+  .evz-profile-name {
+    font-size: 17px;
+  }
+  
+  .evz-profile-email {
+    font-size: 12px;
+  }
+  
+  .evz-edit-profile-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+  
+  .evz-menu-item {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+  
+  .evz-menu-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .evz-profile-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .evz-profile-info {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .evz-edit-profile-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 340px) {
+  .evz-header-bar {
+    padding: 10px 12px;
+  }
+  
+  .evz-header-title {
+    font-size: 15px;
+  }
+  
+  .evz-profile-section {
+    padding: 16px 12px;
+  }
+  
+  .evz-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+  }
+  
+  .evz-profile-name {
+    font-size: 16px;
+  }
+  
+  .evz-menu-item {
+    padding: 10px 12px;
+  }
+  
+  .evz-menu-text {
+    font-size: 13px;
   }
 }
 
 @media (max-width: 320px) {
-  .evz-screen {
-    padding: 14px 8px 8px;
+  .evz-header-bar {
+    padding: 10px;
   }
   
   .evz-header-title {
-    font-size: 16px;
+    font-size: 14px;
   }
   
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-  
-  .evz-header-title {
-    font-size: 16px;
+  .evz-profile-section {
+    padding: 14px 10px;
   }
   
-  .evz-header-subtitle {
-    font-size: 10px;
+  .evz-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+  
+  .evz-profile-name {
+    font-size: 15px;
+  }
+  
+  .evz-profile-email {
+    font-size: 11px;
+  }
+  
+  .evz-menu-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .evz-menu-text {
+    font-size: 12px;
+  }
+  
+  .evz-footer-version {
+    padding: 16px 10px;
+    font-size: 11px;
   }
 }
 `;
@@ -319,7 +446,6 @@ function useEvzStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
     const styleId = "evz-mobile-styles-p17-s01";
-    // Remove existing style element if it exists
     const existing = document.getElementById(styleId);
     if (existing) {
       existing.remove();
@@ -330,7 +456,6 @@ function useEvzStyles() {
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
     
-    // Cleanup: remove styles when component unmounts
     return () => {
       const styleEl = document.getElementById(styleId);
       if (styleEl) {
@@ -352,6 +477,7 @@ const NAME_KEY = "evz.profile.name";
 const EMAIL_KEY = "evz.profile.email";
 const PHONE_KEY = "evz.msisdn";
 const AUTH_KEY = "evz.auth.verified";
+const PICTURE_KEY = "evz.profile.picture";
 
 function safeLocalStorage() {
   if (typeof window === "undefined") return null;
@@ -369,16 +495,6 @@ function getItem(key, fallback = "") {
     return ls.getItem(key) || fallback;
   } catch {
     return fallback;
-  }
-}
-
-function setItem(key, value) {
-  const ls = safeLocalStorage();
-  if (!ls) return;
-  try {
-    ls.setItem(key, value);
-  } catch {
-    // ignore
   }
 }
 
@@ -406,26 +522,15 @@ function initials(name) {
 
 export default function ProfileScreen() {
   useEvzStyles();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState(() => getItem(NAME_KEY, ""));
-  const [email, setEmail] = useState(() => getItem(EMAIL_KEY, ""));
-  const msisdn = getItem(PHONE_KEY, "");
-
+  const name = getItem(NAME_KEY, "");
+  const email = getItem(EMAIL_KEY, "");
+  const profilePicture = getItem(PICTURE_KEY, "");
   const avatarText = useMemo(() => initials(name || "EV"), [name]);
 
-  const isNameValid = name.trim().length >= 2;
-  const isEmailValid =
-    !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-  const nameError = name.length > 0 && !isNameValid;
-  const emailError = !!email && !isEmailValid;
-  const canSave = isNameValid && isEmailValid;
-
-  const handleSave = () => {
-    if (!canSave) return;
-    setItem(NAME_KEY, name.trim());
-    setItem(EMAIL_KEY, email.trim());
-    goTo("/account");
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const handleSignOut = () => {
@@ -433,119 +538,176 @@ export default function ProfileScreen() {
     goTo("/auth/phone");
   };
 
+  const handleEditProfile = () => {
+    navigate(ROUTES.PROFILE_EDIT_ACCOUNT);
+  };
+
+  const handleCameraClick = () => {
+    // Trigger profile picture upload
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files?.[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          try {
+            if (typeof window !== "undefined") {
+              window.localStorage.setItem(PICTURE_KEY, base64String);
+              window.location.reload();
+            }
+          } catch {
+            // ignore
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleClearCache = () => {
+    if (window.confirm("Are you sure you want to clear cache?")) {
+      // Clear cache logic here
+      alert("Cache cleared");
+    }
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm("Are you sure you want to clear history?")) {
+      // Clear history logic here
+      alert("History cleared");
+    }
+  };
+
   return (
     <EvzScreen>
-      <header className="evz-header">
-        <h1 className="evz-header-title">Account</h1>
-        <p className="evz-header-subtitle">Profile &amp; preferences</p>
+      <header className="evz-header-bar">
+        <button type="button" className="evz-header-back" onClick={handleBack} aria-label="Back">
+          <ArrowBackIcon />
+        </button>
+        <h1 className="evz-header-title">My Profile</h1>
+        <button type="button" className="evz-header-settings" aria-label="Settings">
+          <SettingsIcon />
+        </button>
       </header>
 
-      <div className="evz-divider" />
-
-      <main className="evz-main">
-        <section className="evz-card">
+      <div className="evz-profile-section">
+        <div className="evz-avatar-wrapper">
           <div className="evz-avatar" aria-hidden="true">
-            {avatarText}
+            {profilePicture ? (
+              <img src={profilePicture} alt="Profile" />
+            ) : (
+              avatarText
+            )}
           </div>
-
-          <div className="evz-field">
-            <label className="evz-label" htmlFor="evz-profile-name">
-              Display name
-            </label>
-            <input
-              id="evz-profile-name"
-              className="evz-input"
-              type="text"
-              placeholder="e.g., Amina N."
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <div
-              className={
-                "evz-helper" + (nameError ? " evz-helper--error" : "")
-              }
-            >
-              {nameError
-                ? "Enter at least 2 characters"
-                : " "}
-            </div>
+          <div className="evz-avatar-camera" onClick={handleCameraClick} aria-label="Change profile picture">
+            <CameraAltIcon />
           </div>
-
-          <div className="evz-field">
-            <label className="evz-label" htmlFor="evz-profile-email">
-              Email (optional)
-            </label>
-            <input
-              id="evz-profile-email"
-              className="evz-input"
-              type="email"
-              placeholder="amina@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <div
-              className={
-                "evz-helper" + (emailError ? " evz-helper--error" : "")
-              }
-            >
-              {emailError ? "Enter a valid email" : " "}
-            </div>
-          </div>
-
-          <div className="evz-field">
-            <label className="evz-label" htmlFor="evz-profile-phone">
-              Phone
-            </label>
-            <input
-              id="evz-profile-phone"
-              className="evz-input"
-              type="tel"
-              value={msisdn}
-              readOnly
-            />
-            <div className="evz-helper">
-              Phone is managed via OTP login
-            </div>
-          </div>
-        </section>
-
-        <div className="evz-inline-links">
-          <a href="/account/language" className="evz-inline-btn">
-            Language &amp; region
-          </a>
-          <a href="/account/notifications" className="evz-inline-btn">
-            Notifications
-          </a>
         </div>
-      </main>
-
-      <footer className="evz-footer">
-        <div className="evz-footer-row">
-          <button
-            type="button"
-            className="evz-btn-secondary"
-            onClick={() => goTo("/vehicles/select")}
-          >
-            Back
-          </button>
-          <button
-            type="button"
-            className={
-              "evz-btn-primary" + (!canSave ? " evz-btn-primary--disabled" : "")
-            }
-            onClick={handleSave}
-            disabled={!canSave}
-          >
-            Save
+        <div className="evz-profile-info">
+          <h2 className="evz-profile-name">{name || "User"}</h2>
+          <p className="evz-profile-email">{email || "No email set"}</p>
+          <button type="button" className="evz-edit-profile-btn" onClick={handleEditProfile}>
+            Edit Profile
           </button>
         </div>
-        <button
-          type="button"
-          className="evz-signout"
-          onClick={handleSignOut}
-        >
-          Sign out
+      </div>
+
+      <div className="evz-menu-section">
+        <a href={ROUTES.FAVORITES} className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <FavoriteBorderIcon />
+          </div>
+          <span className="evz-menu-text">Favourites</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href="#" className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <DownloadIcon />
+          </div>
+          <span className="evz-menu-text">Downloads</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+      </div>
+
+      <div className="evz-menu-section">
+        <a href={ROUTES.LANGUAGE_REGION_ACCOUNT} className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <LanguageIcon />
+          </div>
+          <span className="evz-menu-text">Languages</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href="#" className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <LocationOnIcon />
+          </div>
+          <span className="evz-menu-text">Location</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href={ROUTES.PROVIDER_PLANS} className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <SubscriptionsIcon />
+          </div>
+          <span className="evz-menu-text">Subscription</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href="#" className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <DisplaySettingsIcon />
+          </div>
+          <span className="evz-menu-text">Display</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+      </div>
+
+      <div className="evz-menu-section">
+        <button type="button" className="evz-menu-item" onClick={handleClearCache}>
+          <div className="evz-menu-icon">
+            <DeleteOutlineIcon />
+          </div>
+          <span className="evz-menu-text">Clear Cache</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
         </button>
+        <button type="button" className="evz-menu-item" onClick={handleClearHistory}>
+          <div className="evz-menu-icon">
+            <HistoryIcon />
+          </div>
+          <span className="evz-menu-text">Clear History</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </button>
+        <button type="button" className="evz-menu-item" onClick={handleSignOut}>
+          <div className="evz-menu-icon">
+            <LogoutIcon />
+          </div>
+          <span className="evz-menu-text">Log Out</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </button>
+      </div>
+
+      <footer className="evz-footer-version">
+        App Version 2.3
       </footer>
     </EvzScreen>
   );
