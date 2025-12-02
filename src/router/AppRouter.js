@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ROUTES } from './routes';
+import BottomNavigation from '../layout/BottomNavigation';
 
 // Auth screens
 import SplashScreen from '../screens/auth/SplashScreen';
@@ -235,6 +236,7 @@ function AppRouter() {
         <Route path={ROUTES.BATTERY_QR_UNREADABLE} element={<BatteryQrUnreadableScreen />} />
         <Route path={ROUTES.BATTERY_MISMATCH} element={<BatteryMismatchScreen />} />
       </Routes>
+      <BottomNavigation />
     </BrowserRouter>
   );
 }
