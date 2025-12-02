@@ -151,6 +151,7 @@ function AppRouter() {
         {/* Swap routes */}
         <Route path={ROUTES.ARRIVED_SHOW_QR} element={<ArrivedShowQrScreen />} />
         <Route path={ROUTES.OPERATOR_SWAP_PAYMENT} element={<OperatorSwapPaymentScreen />} />
+        <Route path={ROUTES.OPERATOR_SWAP_PAY} element={<OperatorSwapPaymentScreen />} />
         <Route path={ROUTES.SAFETY_CHECKLIST} element={<SafetyChecklistScreen />} />
         <Route path={ROUTES.SAFETY_CHECKLIST_SELF} element={<SafetyChecklistScreen />} />
         <Route path={ROUTES.STATION_IDENTIFY_SCAN} element={<StationIdentifyScanScreen />} />

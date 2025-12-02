@@ -274,11 +274,13 @@ export default function DashboardOverviewScreen() {
 
   const [kwhLog, setKwhLog] = useState(() => getJSON(KWH_KEY, []));
   const [co2Factor] = useState(() => getNumber(CO2F_KEY, 0.4));
-  const [sessions] = useState(() => getJSON(SESS_KEY, []));
+  const [sessions, setSessions] = useState(() => getJSON(SESS_KEY, []));
 
   useEffect(() => {
     seedKwh();
+    // Refresh data when component mounts or when navigating to dashboard
     setKwhLog(getJSON(KWH_KEY, []));
+    setSessions(getJSON(SESS_KEY, []));
   }, []);
 
   const kwh7 = useMemo(

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../router/routes";
 
 const evzOperatorSwapPayStyles = `
 :root {
@@ -290,6 +292,7 @@ function OperatorSwapPaymentScreen({
   processingFee = 50,
 }) {
   useEvzOperatorSwapPayStyles();
+  const navigate = useNavigate();
 
   const [selectedId, setSelectedId] = useState("evz");
 
@@ -299,14 +302,59 @@ function OperatorSwapPaymentScreen({
   const total =
     typeof amountDue === "number" && amountDue > 0 ? amountDue : computedTotal;
 
+  const recordCompletedSwap = () => {
+    try {
+      if (typeof window === "undefined") return;
+      const SESS_KEY = "evz.swap.sessions";
+      const existing = window.localStorage.getItem(SESS_KEY);
+      const sessions = existing ? JSON.parse(existing) : [];
+      
+      // Record completed swap session
+      sessions.push({
+        type: "completed",
+        ts: Date.now(),
+        when: Date.now(),
+        kwh: energyKWh,
+        amount: total,
+        method: selectedId,
+        flow: "operator",
+      });
+      
+      window.localStorage.setItem(SESS_KEY, JSON.stringify(sessions));
+      
+      // Also update energy log for dashboard
+      const KWH_KEY = "evz.analytics.kwhLog";
+      const kwhLog = window.localStorage.getItem(KWH_KEY);
+      const kwhEntries = kwhLog ? JSON.parse(kwhLog) : [];
+      kwhEntries.push({
+        ts: Date.now(),
+        kwh: energyKWh,
+      });
+      window.localStorage.setItem(KWH_KEY, JSON.stringify(kwhEntries));
+    } catch {
+      // ignore
+    }
+  };
+
   const handleConfirm = () => {
     // hook into your real payment flow here
     if (typeof window !== "undefined") {
-      window.alert(
-        `Paying ${fmtUGX(total)} via ${
-          PAYMENT_METHODS.find((m) => m.id === selectedId)?.label
-        }`
-      );
+      // In a real app, you would process the payment here
+      // For now, we'll simulate successful payment and navigate to rating
+      try {
+        // Save payment info to localStorage if needed
+        window.localStorage.setItem("evz.swap.payment.completed", "true");
+        window.localStorage.setItem("evz.swap.payment.amount", String(total));
+        window.localStorage.setItem("evz.swap.payment.method", selectedId);
+        
+        // Record completed swap
+        recordCompletedSwap();
+      } catch {
+        // ignore
+      }
+      
+      // Navigate to swap completed rating page
+      navigate(ROUTES.SWAP_COMPLETED_RATING);
     }
   };
 

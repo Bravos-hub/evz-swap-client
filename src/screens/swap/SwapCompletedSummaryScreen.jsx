@@ -240,8 +240,53 @@ export default function SwapCompletedSummaryScreen({
   );
   const durationMs = Number(get(SWAP_NS, "durationMs", "0"));
   const newBatteryId = get(SELF_NS, "newBatteryId", "");
+  const energyKWh = Number(get(SWAP_NS, "energyKWh", "0"));
 
   const [vehicles] = useState(() => loadVehicles());
+
+  // Record completed swap when component mounts
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      const SESS_KEY = "evz.swap.sessions";
+      const existing = window.localStorage.getItem(SESS_KEY);
+      const sessions = existing ? JSON.parse(existing) : [];
+      
+      // Check if this swap is already recorded (avoid duplicates)
+      const alreadyRecorded = sessions.some(
+        (s) => s.reservationId === reservationId && s.type === "completed"
+      );
+      
+      if (!alreadyRecorded) {
+        // Record completed swap session
+        sessions.push({
+          type: "completed",
+          ts: completedAt || Date.now(),
+          when: completedAt || Date.now(),
+          kwh: energyKWh || 0,
+          amount: totalUGX,
+          reservationId: reservationId,
+          flow: "self-service",
+        });
+        
+        window.localStorage.setItem(SESS_KEY, JSON.stringify(sessions));
+        
+        // Also update energy log for dashboard
+        const KWH_KEY = "evz.analytics.kwhLog";
+        const kwhLog = window.localStorage.getItem(KWH_KEY);
+        const kwhEntries = kwhLog ? JSON.parse(kwhLog) : [];
+        if (energyKWh > 0) {
+          kwhEntries.push({
+            ts: completedAt || Date.now(),
+            kwh: energyKWh,
+          });
+          window.localStorage.setItem(KWH_KEY, JSON.stringify(kwhEntries));
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [reservationId, completedAt, totalUGX, energyKWh]);
 
   const selectedVehicleId =
     typeof window !== "undefined"

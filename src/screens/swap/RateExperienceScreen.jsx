@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
 :root {
@@ -195,8 +197,9 @@ function EvzScreen({ children }) {
   );
 }
 
-export default function RateExperienceScreen({ donePath = "/vehicles/select" }) {
+export default function RateExperienceScreen() {
   useEvzStyles();
+  const navigate = useNavigate();
 
   const [stars, setStars] = useState(0);
   const [note, setNote] = useState("");
@@ -218,15 +221,19 @@ export default function RateExperienceScreen({ donePath = "/vehicles/select" }) 
       list.push(entry);
       window.localStorage.setItem(key, JSON.stringify(list));
       setSubmitted(true);
+      
+      // Navigate to dashboard after a brief delay to show "Thanks" message
+      setTimeout(() => {
+        navigate(ROUTES.DASHBOARD);
+      }, 1000);
     } catch {
       // ignore
     }
   };
 
   const handleDone = () => {
-    if (typeof window !== "undefined") {
-      window.location.assign(donePath);
-    }
+    // Navigate to dashboard when skipping rating
+    navigate(ROUTES.DASHBOARD);
   };
 
   return (

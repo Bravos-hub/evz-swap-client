@@ -296,8 +296,25 @@ function SwapCompletedRatingScreen({
     // Hook into your analytics / API here
     if (typeof window !== "undefined") {
       console.log("Swap rating submitted", { rating, selectedTags, feedback });
+      try {
+        // Save rating data if needed
+        window.localStorage.setItem("evz.swap.rating", String(rating));
+        if (selectedTags.length > 0) {
+          window.localStorage.setItem("evz.swap.rating.tags", JSON.stringify(selectedTags));
+        }
+        if (feedback) {
+          window.localStorage.setItem("evz.swap.rating.feedback", feedback);
+        }
+      } catch {
+        // ignore
+      }
     }
     setSubmitted(true);
+    
+    // Navigate to dashboard after a brief delay to show "Thank you" message
+    setTimeout(() => {
+      navigate(ROUTES.DASHBOARD);
+    }, 1000);
   };
 
   return (

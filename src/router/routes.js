@@ -38,6 +38,7 @@ export const ROUTES = {
   // Swap
   ARRIVED_SHOW_QR: '/swap/arrived',
   OPERATOR_SWAP_PAYMENT: '/swap/operator/payment',
+  OPERATOR_SWAP_PAY: '/swap/operator/pay', // Alias for OPERATOR_SWAP_PAYMENT
   SAFETY_CHECKLIST: '/swap/safety',
   SAFETY_CHECKLIST_SELF: '/swap/self/safety', // Alternative route for self-service flow
   STATION_IDENTIFY_SCAN: '/swap/station/scan',
