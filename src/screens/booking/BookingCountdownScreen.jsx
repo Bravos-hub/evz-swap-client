@@ -66,7 +66,7 @@ body {
 .evz-card {
   padding: 16px;
   border-radius: 16px;
-  background-color: var(--evz-surface-soft);
+  background-color: #f3f4f6;
 }
 
 .evz-card-title {
@@ -82,31 +82,33 @@ body {
 }
 
 .evz-timer-shell {
-  margin-top: 12px;
-  padding: 12px;
+  margin-top: 16px;
+  padding: 16px;
   border-radius: 12px;
   text-align: center;
+  background-color: #fff7f0;
   border: 1px solid transparent;
 }
 
 .evz-timer-shell--ok {
-  background-color: #e8fff6;
-  border-color: var(--evz-primary);
+  background-color: #fff7f0;
 }
 
 .evz-timer-shell--danger {
   background-color: #fff2f2;
-  border-color: var(--evz-accent);
 }
 
 .evz-timer-value {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
+  color: var(--evz-accent);
+  margin-bottom: 4px;
 }
 
 .evz-timer-label {
-  font-size: 11px;
-  color: var(--evz-text-secondary);
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 
 .evz-actions-row {
@@ -117,22 +119,32 @@ body {
 
 .evz-chip-button {
   flex: 1;
-  border-radius: 999px;
-  border: 1px solid var(--evz-border-subtle);
-  padding: 8px 10px;
-  font-size: 13px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  font-size: 14px;
   font-weight: 500;
-  background-color: #ffffff;
+  background-color: #f9fafb;
   color: var(--evz-text-primary);
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.evz-chip-button:hover {
+  background-color: #f3f4f6;
+}
+
+.evz-chip-button:active {
+  background-color: #e5e7eb;
 }
 
 .evz-button-main {
   margin-top: 12px;
   width: 100%;
   display: block;
-  border-radius: 999px;
+  border-radius: 12px;
   border: none;
   padding: 14px 18px;
   font-size: 15px;
@@ -141,7 +153,13 @@ body {
   text-align: center;
   background-color: var(--evz-accent);
   color: #ffffff;
-  box-shadow: 0 10px 22px rgba(247, 127, 0, 0.32);
+  box-shadow: 0 4px 12px rgba(247, 127, 0, 0.3);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.evz-button-main:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(247, 127, 0, 0.3);
 }
 
 .evz-footer-note {
@@ -296,16 +314,8 @@ export default function BookingCountdownScreen() {
           <h2 className="evz-card-title">{stationName || "Station"}</h2>
           <p className="evz-card-subtitle">{stationArea}</p>
 
-          <div
-            className={
-              "evz-timer-shell " +
-              (danger ? "evz-timer-shell--danger" : "evz-timer-shell--ok")
-            }
-          >
-            <div
-              className="evz-timer-value"
-              style={{ color: danger ? "#f77f00" : "#03cd8c" }}
-            >
+          <div className="evz-timer-shell evz-timer-shell--ok">
+            <div className="evz-timer-value">
               {msToClock(remainingMs)}
             </div>
             <div className="evz-timer-label">
@@ -318,7 +328,6 @@ export default function BookingCountdownScreen() {
               type="button"
               onClick={handleNavigate}
               className="evz-chip-button"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Navigate
             </button>
@@ -326,7 +335,6 @@ export default function BookingCountdownScreen() {
               type="button"
               onClick={handleExtend}
               className="evz-chip-button"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Extend
             </button>
@@ -334,7 +342,6 @@ export default function BookingCountdownScreen() {
               type="button"
               onClick={handleCancel}
               className="evz-chip-button"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Cancel
             </button>
@@ -344,7 +351,6 @@ export default function BookingCountdownScreen() {
             type="button"
             onClick={handleArrived}
             className="evz-button-main"
-            style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer' }}
           >
             I have arrived
           </button>
