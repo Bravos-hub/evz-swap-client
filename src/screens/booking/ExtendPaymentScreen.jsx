@@ -31,7 +31,7 @@ body {
 
 .evz-screen {
   width: 100%;
-  max-width: 430px;
+  max-width: 420px;
   min-height: 100vh;
   padding: 24px 20px 20px;
   box-sizing: border-box;

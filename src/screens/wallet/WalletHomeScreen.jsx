@@ -30,7 +30,7 @@ body {
 
 .evz-screen {
   width: 100%;
-  max-width: 430px;
+  max-width: 420px;
   min-height: 100vh;
   padding: 24px 20px 20px;
   box-sizing: border-box;
@@ -199,9 +199,229 @@ body {
   text-decoration: underline;
 }
 
-@media (max-width: 375px) {
+/* Responsive styles for 320px - 420px range */
+@media (max-width: 420px) {
   .evz-screen {
-    padding-inline: 16px;
+    max-width: 100%;
+    padding: 20px 16px 16px;
+  }
+  
+  .evz-header-title {
+    font-size: 20px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 12px;
+  }
+  
+  .evz-card {
+    padding: 12px;
+  }
+  
+  .evz-balance-value {
+    font-size: 28px;
+  }
+  
+  .evz-actions-row {
+    gap: 8px;
+  }
+  
+  .evz-button,
+  .evz-button-secondary {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 370px) {
+  .evz-screen {
+    padding: 18px 14px 14px;
+  }
+  
+  .evz-header-title {
+    font-size: 19px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 11px;
+  }
+  
+  .evz-card {
+    padding: 10px;
+    border-radius: 14px;
+  }
+  
+  .evz-card-title {
+    font-size: 12px;
+  }
+  
+  .evz-balance-value {
+    font-size: 26px;
+    margin-top: 2px;
+  }
+  
+  .evz-actions-row {
+    margin-top: 10px;
+    gap: 6px;
+  }
+  
+  .evz-button,
+  .evz-button-secondary {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  
+  .evz-list-title {
+    font-size: 12px;
+  }
+  
+  .evz-list-primary {
+    font-size: 13px;
+  }
+  
+  .evz-list-secondary {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .evz-screen {
+    padding: 16px 12px 12px;
+  }
+  
+  .evz-header-title {
+    font-size: 18px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 11px;
+  }
+  
+  .evz-card {
+    padding: 10px;
+  }
+  
+  .evz-balance-value {
+    font-size: 24px;
+  }
+  
+  .evz-actions-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .evz-button,
+  .evz-button-secondary {
+    width: 100%;
+    padding: 10px 12px;
+  }
+  
+  .evz-list-item {
+    padding: 8px 0;
+  }
+}
+
+@media (max-width: 340px) {
+  .evz-screen {
+    padding: 16px 10px 10px;
+  }
+  
+  .evz-header-title {
+    font-size: 17px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 10px;
+  }
+  
+  .evz-card {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  
+  .evz-card-title {
+    font-size: 11px;
+  }
+  
+  .evz-balance-value {
+    font-size: 22px;
+  }
+  
+  .evz-button,
+  .evz-button-secondary {
+    padding: 9px 10px;
+    font-size: 11px;
+  }
+  
+  .evz-list-title {
+    font-size: 11px;
+  }
+  
+  .evz-list-primary {
+    font-size: 12px;
+  }
+  
+  .evz-list-secondary {
+    font-size: 10px;
+  }
+  
+  .evz-amount-pos,
+  .evz-amount-neg {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 320px) {
+  .evz-screen {
+    padding: 14px 8px 8px;
+  }
+  
+  .evz-header-title {
+    font-size: 16px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 10px;
+  }
+  
+  .evz-card {
+    padding: 8px;
+  }
+  
+  .evz-card-title {
+    font-size: 10px;
+  }
+  
+  .evz-balance-value {
+    font-size: 20px;
+  }
+  
+  .evz-button,
+  .evz-button-secondary {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .evz-list-title {
+    font-size: 10px;
+  }
+  
+  .evz-list-primary {
+    font-size: 11px;
+  }
+  
+  .evz-list-secondary {
+    font-size: 9px;
+  }
+  
+  .evz-amount-pos,
+  .evz-amount-neg {
+    font-size: 11px;
+  }
+  
+  .evz-link-text {
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }
 `;

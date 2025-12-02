@@ -32,7 +32,7 @@ body {
 
 .evz-screen {
   width: 100%;
-  max-width: 430px;
+  max-width: 420px;
   min-height: 100vh;
   padding: 24px 20px 20px;
   box-sizing: border-box;
@@ -281,9 +281,163 @@ body {
   color: #6b7280;
 }
 
-@media (max-width: 375px) {
+/* Responsive styles for 320px - 420px range */
+@media (max-width: 420px) {
   .evz-screen {
-    padding-inline: 16px;
+    max-width: 100%;
+    padding: 20px 16px 16px;
+  }
+  
+  .evz-header-title {
+    font-size: 20px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 370px) {
+  .evz-screen {
+    padding: 18px 14px 14px;
+  }
+  
+  .evz-header-title {
+    font-size: 19px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .evz-screen {
+    padding: 16px 12px 12px;
+  }
+  
+  .evz-header-title {
+    font-size: 18px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 340px) {
+  .evz-screen {
+    padding: 16px 10px 10px;
+  }
+  
+  .evz-header-title {
+    font-size: 17px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 320px) {
+  .evz-screen {
+    padding: 14px 8px 8px;
+  }
+  
+  .evz-header-title {
+    font-size: 16px;
+  }
+  
+  .evz-header-subtitle {
+    font-size: 10px;
+  }
+}
+  
+  .evz-header-row {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .evz-header-text h1 {
+    font-size: 18px;
+  }
+  
+  .evz-header-text p {
+    font-size: 11px;
+  }
+  
+  .evz-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  
+  .evz-header-btn,
+  .evz-header-btn-secondary {
+    padding: 6px 8px;
+    font-size: 10px;
+    flex: 1;
+  }
+  
+  .evz-search {
+    margin-bottom: 12px;
+  }
+  
+  .evz-search-input {
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  
+  .evz-station-row {
+    padding: 10px 0;
+    gap: 8px;
+  }
+  
+  .evz-station-row:hover {
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .evz-station-title {
+    font-size: 12px;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  
+  .evz-station-distance {
+    font-size: 10px;
+  }
+  
+  .evz-chip-row {
+    gap: 4px;
+    margin-top: 4px;
+  }
+  
+  .evz-chip {
+    padding: 2px 6px;
+    font-size: 8px;
+    border-radius: 4px;
+  }
+  
+  .evz-heart-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+  
+  .evz-heart-icon {
+    font-size: 14px;
+  }
+  
+  .evz-empty-primary {
+    font-size: 13px;
+  }
+  
+  .evz-empty-secondary {
+    font-size: 11px;
   }
 }
 `;

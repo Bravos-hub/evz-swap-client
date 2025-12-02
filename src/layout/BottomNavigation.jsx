@@ -76,12 +76,90 @@ body.evz-nav-visible .evz-screen {
   font-weight: 600;
 }
 
-@media (max-width: 375px) {
+/* Responsive styles for 320px - 420px range */
+@media (max-width: 420px) {
+  .evz-bottom-nav {
+    max-width: 100%;
+  }
+  
+  .evz-bottom-nav-item {
+    padding: 4px 8px;
+    min-width: 50px;
+  }
+  
   .evz-bottom-nav-label {
     font-size: 10px;
   }
+  
   .evz-bottom-nav-icon {
     font-size: 22px;
+  }
+}
+
+@media (max-width: 370px) {
+  .evz-bottom-nav-item {
+    padding: 4px 6px;
+    min-width: 48px;
+  }
+  
+  .evz-bottom-nav-label {
+    font-size: 9px;
+  }
+  
+  .evz-bottom-nav-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .evz-bottom-nav-item {
+    padding: 4px 5px;
+    min-width: 46px;
+  }
+  
+  .evz-bottom-nav-label {
+    font-size: 9px;
+  }
+  
+  .evz-bottom-nav-icon {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 340px) {
+  .evz-bottom-nav-item {
+    padding: 4px 4px;
+    min-width: 44px;
+    gap: 3px;
+  }
+  
+  .evz-bottom-nav-label {
+    font-size: 8px;
+  }
+  
+  .evz-bottom-nav-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 320px) {
+  .evz-bottom-nav-item {
+    padding: 4px 3px;
+    min-width: 42px;
+    gap: 2px;
+  }
+  
+  .evz-bottom-nav-label {
+    font-size: 8px;
+    line-height: 1.1;
+  }
+  
+  .evz-bottom-nav-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
   }
 }
 `;
