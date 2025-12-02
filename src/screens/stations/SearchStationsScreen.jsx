@@ -43,33 +43,37 @@ body {
 .evz-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .evz-header-text h1 {
-  margin: 0 0 2px;
-  font-size: 22px;
+  margin: 0 0 4px;
+  font-size: 24px;
   font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
 }
 
 .evz-header-text p {
   margin: 0;
-  font-size: 13px;
-  color: var(--evz-text-secondary);
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 400;
 }
 
 .evz-header-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  align-items: center;
 }
 
 .evz-header-btn,
 .evz-header-btn-secondary {
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   display: inline-flex;
@@ -77,48 +81,69 @@ body {
   justify-content: center;
   cursor: pointer;
   border: 1px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .evz-header-btn-secondary {
-  border-color: #a6a6a6;
+  border-color: #e5e7eb;
   background-color: #ffffff;
-  color: var(--evz-text-primary);
+  color: #374151;
+}
+
+.evz-header-btn-secondary:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .evz-header-btn {
   border-color: transparent;
   background: none;
   color: var(--evz-accent);
+  font-weight: 600;
+}
+
+.evz-header-btn:hover {
+  color: #ea580c;
 }
 
 .evz-search {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .evz-search-input {
   width: 100%;
-  border-radius: 999px;
-  border: 1px solid var(--evz-border-subtle);
-  padding: 9px 12px;
-  font-size: 14px;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  padding: 12px 16px;
+  font-size: 15px;
+  background-color: #ffffff;
+  color: #111827;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.evz-search-input::placeholder {
+  color: #9ca3af;
 }
 
 .evz-search-input:focus {
   outline: none;
-  border-color: rgba(3, 205, 140, 0.9);
-  box-shadow: 0 0 0 1px rgba(3, 205, 140, 0.08);
+  border-color: var(--evz-primary);
+  box-shadow: 0 0 0 3px rgba(3, 205, 140, 0.1);
 }
 
 .evz-divider {
   height: 1px;
   width: 100%;
   background-color: #e5e7eb;
-  margin: 8px 0 0;
+  margin: 0 0 12px;
 }
 
 .evz-results {
-  margin-top: 8px;
+  margin-top: 4px;
   flex: 1;
+  overflow-y: auto;
 }
 
 .evz-station-list {
@@ -131,73 +156,113 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--evz-surface-soft);
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
   text-decoration: none;
   color: inherit;
+  transition: background-color 0.15s ease;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+}
+
+.evz-station-row:hover {
+  background-color: #fafafa;
+  margin: 0 -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 0;
 }
 
 .evz-station-main {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .evz-station-title {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 15px;
   font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+  line-height: 1.4;
 }
 
 .evz-station-distance {
-  font-size: 11px;
-  color: var(--evz-text-secondary);
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 400;
 }
 
 .evz-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .evz-chip {
-  border-radius: 999px;
-  padding: 2px 8px;
+  border-radius: 6px;
+  padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
   color: #ffffff;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .evz-chip--ready {
   background-color: var(--evz-primary);
+  box-shadow: 0 1px 2px rgba(3, 205, 140, 0.2);
 }
 
 .evz-chip--charging {
   background-color: var(--evz-accent);
+  box-shadow: 0 1px 2px rgba(247, 127, 0, 0.2);
 }
 
 .evz-chip--type {
-  background-color: #a6a6a6;
+  background-color: #6b7280;
+  box-shadow: 0 1px 2px rgba(107, 114, 128, 0.2);
 }
 
 .evz-heart-btn {
-  border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
   border: none;
   background-color: #f9fafb;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.evz-heart-btn:hover {
+  background-color: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.evz-heart-btn:active {
+  transform: scale(0.95);
 }
 
 .evz-heart-icon {
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
+  color: #9ca3af;
+  transition: color 0.2s ease;
 }
 
 .evz-heart-icon--active {
@@ -205,12 +270,15 @@ body {
 }
 
 .evz-empty-primary {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
 }
 
 .evz-empty-secondary {
-  font-size: 12px;
-  color: var(--evz-text-secondary);
+  font-size: 13px;
+  color: #6b7280;
 }
 
 @media (max-width: 375px) {
@@ -386,7 +454,6 @@ export default function SearchStationsScreen() {
               type="button"
               onClick={() => navigate(ROUTES.FILTERS)}
               className="evz-header-btn-secondary"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Filters
             </button>
@@ -394,7 +461,6 @@ export default function SearchStationsScreen() {
               type="button"
               onClick={() => navigate(ROUTES.FAVORITES)}
               className="evz-header-btn"
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Favorites
             </button>
@@ -421,7 +487,6 @@ export default function SearchStationsScreen() {
                 type="button"
                 onClick={() => navigate(`${ROUTES.STATION_DETAILS.replace(':id', s.id)}?stationId=${encodeURIComponent(s.id)}`)}
                 className="evz-station-row"
-                style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
               >
                 <div className="evz-station-main">
                   <div className="evz-station-title">

@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
 :root {
@@ -74,6 +76,20 @@ body {
   border-radius: 16px;
   background-color: var(--evz-surface-soft);
   padding: 12px 14px 10px;
+}
+
+.evz-card--clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.evz-card--clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.evz-card--clickable:active {
+  transform: translateY(0);
 }
 
 .evz-card--impact {
@@ -271,6 +287,7 @@ function goTo(path) {
 
 export default function DashboardOverviewScreen() {
   useEvzStyles();
+  const navigate = useNavigate();
 
   const [kwhLog, setKwhLog] = useState(() => getJSON(KWH_KEY, []));
   const [co2Factor] = useState(() => getNumber(CO2F_KEY, 0.4));
@@ -317,7 +334,19 @@ export default function DashboardOverviewScreen() {
             </div>
           </section>
 
-          <section className="evz-card">
+          <section 
+            className="evz-card evz-card--clickable"
+            onClick={() => navigate(ROUTES.SWAP_SESSIONS)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate(ROUTES.SWAP_SESSIONS);
+              }
+            }}
+            aria-label="View swap history"
+          >
             <div className="evz-card-title">Swaps completed</div>
             <div className="evz-kpi-value-main">{swaps7}</div>
           </section>

@@ -182,6 +182,7 @@ function AppRouter() {
         <Route path={ROUTES.WALLET_HOME} element={<WalletHomeScreen />} />
         <Route path={ROUTES.PAYMENT_METHODS} element={<PaymentMethodsScreen />} />
         <Route path={ROUTES.TOP_UP} element={<TopUpScreen />} />
+        <Route path={ROUTES.TOP_UP_ALIAS} element={<TopUpScreen />} />
         <Route path={ROUTES.TRANSACTIONS_LIST} element={<TransactionsListScreen />} />
         <Route path={ROUTES.TRANSACTION_DETAILS} element={<TransactionDetailsScreen />} />
         <Route path={ROUTES.INVOICES} element={<InvoicesScreen />} />
