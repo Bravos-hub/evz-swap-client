@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 
 const evzStyles = `
 :root {
@@ -187,11 +187,25 @@ const SELF_NS = "evz.self.";
 function useEvzStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-mobile-styles-p27-s03")) return;
+    const styleId = "evz-mobile-styles-p27-s03";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles-p27-s03";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 

@@ -172,11 +172,25 @@ body {
 function useEvzStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-mobile-styles-p18-s02")) return;
+    const styleId = "evz-mobile-styles-p18-s02";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles-p18-s02";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -249,7 +263,7 @@ export default function TwoFactorSetupScreen() {
     }
   });
 
-  const [secret, setSecret] = useState(() => {
+  const [secret] = useState(() => {
     const existing = getItem("evz.sec.2fa.secret", "");
     return existing || randomSecret();
   });

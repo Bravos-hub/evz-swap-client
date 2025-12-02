@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
 
@@ -254,11 +254,25 @@ body {
 
 function useEvzStyles() {
   useEffect(() => {
-    if (document.getElementById("evz-mobile-styles")) return;
+    const styleId = "evz-mobile-styles";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -268,15 +282,6 @@ function EvzScreen({ children }) {
       <div className="evz-screen">{children}</div>
     </div>
   );
-}
-
-function getInitials(name) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((s) => (s[0] ? s[0].toUpperCase() : ""))
-    .join("");
 }
 
 export default function ProfileSetupScreen() {
@@ -303,7 +308,6 @@ export default function ProfileSetupScreen() {
 
   const fileInputRef = useRef(null);
 
-  const initials = useMemo(() => (name ? getInitials(name) : "EV"), [name]);
   const isValid = name.trim().length >= 2;
 
   const handleFileSelect = (e) => {

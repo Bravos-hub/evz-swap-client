@@ -160,11 +160,25 @@ body {
 
 function useEvzStyles() {
   useEffect(() => {
-    if (document.getElementById("evz-mobile-styles-p06-s03")) return;
+    const styleId = "evz-mobile-styles-p06-s03";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles-p06-s03";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -227,7 +241,7 @@ export default function TimeExtendedScreen() {
   const expiryAt = Number(getBookingItem("expiryAt", "0"));
   const reservationId = getBookingItem("reservationId");
 
-  const station = useMemo(() => loadStation(stationId), [stationId]);
+  // const station = useMemo(() => loadStation(stationId), [stationId]); // Reserved for future use
 
   const [now, setNow] = useState(() => Date.now());
 

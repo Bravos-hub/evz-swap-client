@@ -104,6 +104,21 @@ body {
   text-decoration: underline;
 }
 
+.evz-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--evz-accent);
+  text-decoration: none;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.evz-link-button:hover {
+  text-decoration: underline;
+}
+
 .evz-consent-row {
   display: flex;
   align-items: flex-start;
@@ -205,11 +220,25 @@ const ACCEPT_KEY = "evz.legal.acceptedAt";
 function useEvzStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-mobile-styles-p28-s01")) return;
+    const styleId = "evz-mobile-styles-p28-s01";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles-p28-s01";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -290,8 +319,8 @@ export default function TermsPrivacyScreen({ nextPath = "/" }) {
           </ul>
           <div className="evz-card-links">
             Full documents: {" "}
-            <a href="#">Terms of Service</a> • {" "}
-            <a href="#">Privacy Policy</a>
+            <button type="button" className="evz-link-button" onClick={() => {}}>Terms of Service</button> • {" "}
+            <button type="button" className="evz-link-button" onClick={() => {}}>Privacy Policy</button>
           </div>
         </section>
 

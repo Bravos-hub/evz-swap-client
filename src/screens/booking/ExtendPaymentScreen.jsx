@@ -238,11 +238,25 @@ body {
 function useEvzExtendPayStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-extend-pay-styles")) return;
+    const styleId = "evz-extend-pay-styles";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-extend-pay-styles";
+    style.id = styleId;
     style.innerHTML = evzExtendPayStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 

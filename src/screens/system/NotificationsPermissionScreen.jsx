@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const evzStyles = `
 :root {
@@ -148,13 +148,27 @@ body {
 `;
 
 function useEvzStyles() {
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-mobile-styles-p22-s03")) return;
+    const styleId = "evz-mobile-styles-p22-s03";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles-p22-s03";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 

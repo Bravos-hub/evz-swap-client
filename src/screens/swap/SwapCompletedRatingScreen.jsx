@@ -234,11 +234,25 @@ body {
 function useEvzSwapRatingStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-swap-rating-styles")) return;
+    const styleId = "evz-swap-rating-styles";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-swap-rating-styles";
+    style.id = styleId;
     style.innerHTML = evzSwapRatingStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 

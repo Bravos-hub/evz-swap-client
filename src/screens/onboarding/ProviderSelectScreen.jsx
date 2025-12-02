@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
 
@@ -154,11 +154,25 @@ body {
 
 function useEvzStyles() {
   useEffect(() => {
-    if (document.getElementById("evz-mobile-styles")) return;
+    const styleId = "evz-mobile-styles";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -208,9 +222,9 @@ export default function ProviderSelectScreen() {
     navigate(`${ROUTES.STATION_MAP_LIST}?provider=${encodeURIComponent(selected)}`);
   };
 
-  const handleViewPlans = () => {
-    navigate(ROUTES.PROVIDER_PLANS);
-  };
+  // const handleViewPlans = () => {
+  //   navigate(ROUTES.PROVIDER_PLANS);
+  // }; // Reserved for future use
 
   const handleBack = () => {
     navigate(ROUTES.VEHICLE_SELECT);

@@ -221,11 +221,25 @@ body {
 
 function useEvzStyles() {
   useEffect(() => {
-    if (document.getElementById("evz-mobile-styles")) return;
+    const styleId = "evz-mobile-styles";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -334,17 +348,17 @@ export default function StationMapListScreen() {
     navigate(`${ROUTES.STATION_DETAILS.replace(':id', selected.id)}?stationId=${encodeURIComponent(selected.id)}`);
   };
 
-  const handleSearch = () => {
-    navigate(ROUTES.SEARCH_STATIONS);
-  };
+  // const handleSearch = () => {
+  //   navigate(ROUTES.SEARCH_STATIONS);
+  // }; // Reserved for future use
 
-  const handleFilters = () => {
-    navigate(ROUTES.FILTERS);
-  };
+  // const handleFilters = () => {
+  //   navigate(ROUTES.FILTERS);
+  // }; // Reserved for future use
 
-  const handleFavorites = () => {
-    navigate(ROUTES.FAVORITES);
-  };
+  // const handleFavorites = () => {
+  //   navigate(ROUTES.FAVORITES);
+  // }; // Reserved for future use
 
   const title = providerName || "Stations";
 

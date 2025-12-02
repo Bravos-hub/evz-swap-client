@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
 :root {
@@ -198,11 +200,25 @@ body {
 function useEvzStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-mobile-styles-p19-s03")) return;
+    const styleId = "evz-mobile-styles-p19-s03";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-mobile-styles-p19-s03";
+    style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
@@ -244,13 +260,9 @@ function setNum(key, value) {
   }
 }
 
-function goTo(path) {
-  if (typeof window === "undefined") return;
-  window.location.assign(path);
-}
-
 export default function BatteryHealthDetailScreen() {
   useEvzStyles();
+  const navigate = useNavigate();
 
   const [soh, setSoh] = useState(() => getNum("evz.battery.soh", 95));
   const [cycles, setCycles] = useState(() => getNum("evz.battery.cycles", 120));
@@ -265,6 +277,7 @@ export default function BatteryHealthDetailScreen() {
   const handleSave = () => {
     setNum("evz.battery.soh", soh);
     setNum("evz.battery.cycles", cycles);
+    navigate(ROUTES.DASHBOARD);
   };
 
   return (
@@ -352,7 +365,7 @@ export default function BatteryHealthDetailScreen() {
           <button
             type="button"
             className="evz-btn-secondary"
-            onClick={() => goTo("/dashboard")}
+            onClick={() => navigate(ROUTES.DASHBOARD)}
           >
             Back
           </button>

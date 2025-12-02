@@ -235,11 +235,25 @@ body {
 function useEvzOperatorSwapPayStyles() {
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.getElementById("evz-operator-swap-pay-styles")) return;
+    const styleId = "evz-operator-swap-pay-styles";
+    // Remove existing style element if it exists
+    const existing = document.getElementById(styleId);
+    if (existing) {
+      existing.remove();
+    }
+    
     const style = document.createElement("style");
-    style.id = "evz-operator-swap-pay-styles";
+    style.id = styleId;
     style.innerHTML = evzOperatorSwapPayStyles;
     document.head.appendChild(style);
+    
+    // Cleanup: remove styles when component unmounts
+    return () => {
+      const styleEl = document.getElementById(styleId);
+      if (styleEl) {
+        styleEl.remove();
+      }
+    };
   }, []);
 }
 
