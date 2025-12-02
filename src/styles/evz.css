@@ -1,0 +1,106 @@
+/* Global styles (from your evzStyles strings) */
+:root {
+  --evz-primary: #03cd8c;
+  --evz-accent: #f77f00;
+  --evz-bg: #ffffff;
+  --evz-surface: #ffffff;
+  --evz-surface-soft: #f2f2f2;
+  --evz-text-primary: #111827;
+  --evz-text-secondary: #6b7280;
+  --evz-border-subtle: rgba(15, 23, 42, 0.08);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--evz-bg);
+}
+
+.evz-app {
+  min-height: 100vh;
+  background-color: var(--evz-bg);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  color: var(--evz-text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif;
+}
+
+.evz-screen {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  padding: 24px 20px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.evz-screen--center {
+  justify-content: center;
+  align-items: center;
+}
+
+.evz-header {
+  padding-bottom: 4px;
+}
+
+.evz-header-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 2px;
+}
+
+.evz-header-subtitle {
+  font-size: 13px;
+  color: var(--evz-text-secondary);
+  margin: 0;
+}
+
+.evz-divider {
+  height: 1px;
+  width: 100%;
+  background-color: #e5e7eb;
+  margin: 12px 0 10px;
+}
+
+.evz-main {
+  padding-top: 4px;
+}
+
+.evz-card {
+  border-radius: 16px;
+  background-color: var(--evz-surface-soft);
+  padding: 12px 14px 10px;
+}
+
+.evz-card-applied {
+  border-radius: 16px;
+  background-color: #e8fff6;
+  border: 1px solid var(--evz-primary);
+  padding: 10px 12px 8px;
+  margin-bottom: 10px;
+}
+
+.evz-card-title {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.evz-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.evz-chip-code {
+  background-color: #a6a6a6;
+  color: #ffffff;
+}
+
+/* Add more common styles as needed */
+
