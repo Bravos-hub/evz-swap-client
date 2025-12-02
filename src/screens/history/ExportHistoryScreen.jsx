@@ -223,19 +223,136 @@ function setJSON(key, value) {
   }
 }
 
-function downloadJSON(filename, data) {
+function downloadPDF(filename, rows) {
   try {
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
+    if (rows.length === 0) {
+      alert("No swap history to download.");
+      return;
+    }
+
+    // Create HTML content for PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>EVZ Swap History</title>
+          <style>
+            @media print {
+              @page {
+                margin: 1cm;
+              }
+            }
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              color: #111827;
+              margin: 0;
+            }
+            h1 {
+              color: #111827;
+              font-size: 24px;
+              margin-bottom: 10px;
+            }
+            .meta {
+              color: #6b7280;
+              font-size: 12px;
+              margin-bottom: 20px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+              font-size: 11px;
+            }
+            th, td {
+              border: 1px solid #d1d5db;
+              padding: 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #f3f4f6;
+              font-weight: 600;
+              color: #111827;
+            }
+            tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            .footer {
+              margin-top: 30px;
+              font-size: 11px;
+              color: #6b7280;
+              text-align: center;
+              border-top: 1px solid #e5e7eb;
+              padding-top: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>EVZ Swap History</h1>
+          <div class="meta">Generated on: ${new Date().toLocaleString()}</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Reservation ID</th>
+                <th>Date & Time</th>
+                <th>Station</th>
+                <th>Area</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Total (UGX)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map((r) => `
+                <tr>
+                  <td>${(r.reservationId || "—").toString()}</td>
+                  <td>${r.when ? new Date(r.when).toLocaleString() : "—"}</td>
+                  <td>${(r.stationName || "—").toString()}</td>
+                  <td>${(r.stationArea || "—").toString()}</td>
+                  <td>${r.type === "self" ? "Self-service" : r.type === "operator" ? "Operator" : (r.type || "—").toString()}</td>
+                  <td>${r.durationMs ? `${Math.floor(r.durationMs / 60000)} min` : "—"}</td>
+                  <td>${r.totalUGX ? Number(r.totalUGX).toLocaleString("en-UG") : "—"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+          <div class="footer">
+            Total sessions: ${rows.length}
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Create a blob with HTML content
+    const blob = new Blob([htmlContent], { type: "text/html" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  } catch {
-    // ignore
+    
+    // Open in new window and trigger print (which allows saving as PDF)
+    const printWindow = window.open(url, "_blank");
+    if (printWindow) {
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.print();
+          // Clean up after a delay
+          setTimeout(() => {
+            URL.revokeObjectURL(url);
+          }, 1000);
+        }, 250);
+      };
+    } else {
+      // Fallback: download as HTML file (user can convert to PDF manually)
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename.replace(".pdf", ".html");
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+    }
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    alert("Error generating PDF. Please try again.");
   }
 }
 
@@ -317,9 +434,9 @@ export default function ExportHistoryScreen() {
             <button
               type="button"
               className="evz-btn-secondary"
-              onClick={() => downloadJSON("EVZ-swap-history.json", rows)}
+              onClick={() => downloadPDF("EVZ-swap-history.pdf", rows)}
             >
-              Download JSON
+              Download PDF
             </button>
           </div>
         </section>
