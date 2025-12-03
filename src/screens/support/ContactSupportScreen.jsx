@@ -364,7 +364,7 @@ export default function ContactSupportScreen() {
   const mailto = useMemo(() => {
     const subject = encodeURIComponent("EVzone Support");
     const body = encodeURIComponent(`${message}\n\nLogs:\n${logs}`);
-    return `mailto:support@evzone.example?subject=${subject}&body=${body}`;
+    return `mailto:support@evzone.com?subject=${subject}&body=${body}`;
   }, [message, logs]);
 
   return (
@@ -389,7 +389,11 @@ export default function ContactSupportScreen() {
             <button
               type="button"
               className="evz-btn-secondary"
-              onClick={() => goTo("/help/chat")}
+              onClick={() => {
+                if (typeof window !== "undefined" && window.alert) {
+                  window.alert("Live chat is coming soon! Please use Email or Call for now.");
+                }
+              }}
             >
               Open chat
             </button>
@@ -429,7 +433,7 @@ export default function ContactSupportScreen() {
         <button
           type="button"
           className="evz-footer-btn"
-          onClick={() => goTo("/help")}
+          onClick={() => goTo("/support/help")}
         >
           Back to Help
         </button>

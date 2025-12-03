@@ -366,11 +366,6 @@ function fmt(curr, n, period) {
   return `${curr} ${Number(n || 0).toLocaleString("en-UG")}${period || ""}`;
 }
 
-function goTo(href) {
-  if (typeof window === "undefined") return;
-  window.location.assign(href);
-}
-
 function EvzScreen({ children }) {
   return (
     <div className="evz-app">

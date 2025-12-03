@@ -228,6 +228,7 @@ function AppRouter() {
         {/* Support routes */}
         <Route path={ROUTES.HELP_CENTER} element={<HelpCenterScreen />} />
         <Route path={ROUTES.CONTACT_SUPPORT} element={<ContactSupportScreen />} />
+        <Route path={ROUTES.CONTACT_SUPPORT_ALIAS} element={<ContactSupportScreen />} />
         <Route path={ROUTES.REPORT_ISSUE} element={<ReportIssueScreen />} />
         
         {/* System routes */}

@@ -306,7 +306,6 @@ export default function TimeExtendedScreen() {
   const navigate = useNavigate();
   useEvzStyles();
 
-  const stationId = getBookingItem("stationId");
   const stationName = getBookingItem("stationName");
   const stationArea = getBookingItem("stationArea");
   const holdFee = Number(getBookingItem("holdFee", "0"));

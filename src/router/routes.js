@@ -69,8 +69,7 @@ export const ROUTES = {
   // Wallet
   WALLET_HOME: '/wallet',
   PAYMENT_METHODS: '/wallet/methods',
-  TOP_UP: '/wallet/top-up',
-  TOP_UP_ALIAS: '/wallet/topup', // Alias for TOP_UP
+  TOP_UP: '/wallet/topup',// Alias for TOP_UP
   TRANSACTIONS_LIST: '/wallet/transactions',
   TRANSACTION_DETAILS: '/wallet/transactions/:id',
   INVOICES: '/wallet/invoices',

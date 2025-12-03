@@ -345,6 +345,7 @@ export default function BottomNavigation() {
 
     // Check dynamic routes (e.g., /stations/:id, /history/:id)
     const isDynamicRoute = hiddenRoutes.some(route => {
+      if (!route) return false;
       if (route.includes(':')) {
         const routePattern = route.replace(/:[^/]+/g, '[^/]+');
         const regex = new RegExp(`^${routePattern}$`);
@@ -380,6 +381,7 @@ export default function BottomNavigation() {
     for (const item of navItems) {
       // Check if current path matches any route in this tab's routes
       for (const route of item.routes) {
+        if (!route) continue; // Skip undefined routes
         if (route === currentPath) {
           return item.id;
         }
@@ -394,7 +396,7 @@ export default function BottomNavigation() {
       }
       
       // Also check if path starts with the base route
-      if (currentPath.startsWith(item.route) && item.route !== '/') {
+      if (item.route && currentPath.startsWith(item.route) && item.route !== '/') {
         return item.id;
       }
     }

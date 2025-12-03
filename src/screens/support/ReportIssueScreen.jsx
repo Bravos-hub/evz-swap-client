@@ -358,7 +358,7 @@ export default function ReportIssueScreen() {
       window.alert(`Ticket created: ${ticket.id}`);
     }
 
-    goTo("/help");
+    goTo("/support/help");
   };
 
   return (
@@ -444,7 +444,7 @@ export default function ReportIssueScreen() {
           <button
             type="button"
             className="evz-btn-secondary"
-            onClick={() => goTo("/help")}
+            onClick={() => goTo("/support/help")}
           >
             Back
           </button>

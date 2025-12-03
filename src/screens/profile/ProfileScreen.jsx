@@ -1,15 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SettingsIcon from '@mui/icons-material/Settings';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import DownloadIcon from '@mui/icons-material/Download';
 import LanguageIcon from '@mui/icons-material/Language';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
-import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import HistoryIcon from '@mui/icons-material/History';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import LockIcon from '@mui/icons-material/Lock';
+import DevicesIcon from '@mui/icons-material/Devices';
+import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -63,36 +61,12 @@ body {
   background: var(--evz-surface);
 }
 
-.evz-header-back {
-  background: none;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  color: var(--evz-text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: -8px;
-}
-
 .evz-header-title {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
-  flex: 1;
   text-align: center;
-}
-
-.evz-header-settings {
-  background: none;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  color: var(--evz-text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: -8px;
+  width: 100%;
 }
 
 .evz-profile-section {
@@ -203,6 +177,8 @@ body {
   gap: 16px;
   text-decoration: none;
   color: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .evz-menu-item:hover {
@@ -475,7 +451,6 @@ function EvzScreen({ children }) {
 
 const NAME_KEY = "evz.profile.name";
 const EMAIL_KEY = "evz.profile.email";
-const PHONE_KEY = "evz.msisdn";
 const AUTH_KEY = "evz.auth.verified";
 const PICTURE_KEY = "evz.profile.picture";
 
@@ -529,10 +504,6 @@ export default function ProfileScreen() {
   const profilePicture = getItem(PICTURE_KEY, "");
   const avatarText = useMemo(() => initials(name || "EV"), [name]);
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   const handleSignOut = () => {
     removeItem(AUTH_KEY);
     goTo("/auth/phone");
@@ -540,6 +511,10 @@ export default function ProfileScreen() {
 
   const handleEditProfile = () => {
     navigate(ROUTES.PROFILE_EDIT_ACCOUNT);
+  };
+
+  const handleLocation = () => {
+    // Location settings - to be implemented
   };
 
   const handleCameraClick = () => {
@@ -568,30 +543,11 @@ export default function ProfileScreen() {
     input.click();
   };
 
-  const handleClearCache = () => {
-    if (window.confirm("Are you sure you want to clear cache?")) {
-      // Clear cache logic here
-      alert("Cache cleared");
-    }
-  };
-
-  const handleClearHistory = () => {
-    if (window.confirm("Are you sure you want to clear history?")) {
-      // Clear history logic here
-      alert("History cleared");
-    }
-  };
 
   return (
     <EvzScreen>
       <header className="evz-header-bar">
-        <button type="button" className="evz-header-back" onClick={handleBack} aria-label="Back">
-          <ArrowBackIcon />
-        </button>
         <h1 className="evz-header-title">My Profile</h1>
-        <button type="button" className="evz-header-settings" aria-label="Settings">
-          <SettingsIcon />
-        </button>
       </header>
 
       <div className="evz-profile-section">
@@ -626,15 +582,6 @@ export default function ProfileScreen() {
             <ChevronRightIcon />
           </div>
         </a>
-        <a href="#" className="evz-menu-item">
-          <div className="evz-menu-icon">
-            <DownloadIcon />
-          </div>
-          <span className="evz-menu-text">Downloads</span>
-          <div className="evz-menu-arrow">
-            <ChevronRightIcon />
-          </div>
-        </a>
       </div>
 
       <div className="evz-menu-section">
@@ -647,7 +594,7 @@ export default function ProfileScreen() {
             <ChevronRightIcon />
           </div>
         </a>
-        <a href="#" className="evz-menu-item">
+        <button type="button" className="evz-menu-item" onClick={handleLocation}>
           <div className="evz-menu-icon">
             <LocationOnIcon />
           </div>
@@ -655,7 +602,7 @@ export default function ProfileScreen() {
           <div className="evz-menu-arrow">
             <ChevronRightIcon />
           </div>
-        </a>
+        </button>
         <a href={ROUTES.PROVIDER_PLANS} className="evz-menu-item">
           <div className="evz-menu-icon">
             <SubscriptionsIcon />
@@ -665,11 +612,29 @@ export default function ProfileScreen() {
             <ChevronRightIcon />
           </div>
         </a>
-        <a href="#" className="evz-menu-item">
+        <a href={ROUTES.NOTIFICATION_SETTINGS_ACCOUNT} className="evz-menu-item">
           <div className="evz-menu-icon">
-            <DisplaySettingsIcon />
+            <NotificationsIcon />
           </div>
-          <span className="evz-menu-text">Display</span>
+          <span className="evz-menu-text">Notifications</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href={ROUTES.LOCK_WALLET} className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <LockIcon />
+          </div>
+          <span className="evz-menu-text">Wallet Lock</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href={ROUTES.SESSION_MANAGEMENT} className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <DevicesIcon />
+          </div>
+          <span className="evz-menu-text">Sessions</span>
           <div className="evz-menu-arrow">
             <ChevronRightIcon />
           </div>
@@ -677,24 +642,15 @@ export default function ProfileScreen() {
       </div>
 
       <div className="evz-menu-section">
-        <button type="button" className="evz-menu-item" onClick={handleClearCache}>
+        <a href={ROUTES.HELP_CENTER} className="evz-menu-item">
           <div className="evz-menu-icon">
-            <DeleteOutlineIcon />
+            <HelpIcon />
           </div>
-          <span className="evz-menu-text">Clear Cache</span>
+          <span className="evz-menu-text">Help Center</span>
           <div className="evz-menu-arrow">
             <ChevronRightIcon />
           </div>
-        </button>
-        <button type="button" className="evz-menu-item" onClick={handleClearHistory}>
-          <div className="evz-menu-icon">
-            <HistoryIcon />
-          </div>
-          <span className="evz-menu-text">Clear History</span>
-          <div className="evz-menu-arrow">
-            <ChevronRightIcon />
-          </div>
-        </button>
+        </a>
         <button type="button" className="evz-menu-item" onClick={handleSignOut}>
           <div className="evz-menu-icon">
             <LogoutIcon />

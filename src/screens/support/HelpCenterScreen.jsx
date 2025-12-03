@@ -1,4 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { ROUTES } from "../../router/routes";
 
 const evzStyles = `
 :root {
@@ -43,6 +46,36 @@ body {
   justify-content: space-between;
   gap: 8px;
   padding-bottom: 8px;
+  position: relative;
+}
+
+.evz-header-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--evz-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -4px;
+  transition: opacity 0.2s ease;
+}
+
+.evz-header-back:hover {
+  opacity: 0.7;
+}
+
+.evz-header-back svg {
+  font-size: 20px;
+}
+
+.evz-header-content {
+  flex: 1;
+  margin-left: 32px;
 }
 
 .evz-header-title {
@@ -341,6 +374,7 @@ function goTo(path) {
 
 export default function HelpCenterScreen() {
   useEvzStyles();
+  const navigate = useNavigate();
 
   const [q, setQ] = useState("");
   const [openIndex, setOpenIndex] = useState(null);
@@ -359,7 +393,15 @@ export default function HelpCenterScreen() {
   return (
     <EvzScreen>
       <header className="evz-header">
-        <div>
+        <button
+          type="button"
+          className="evz-header-back"
+          onClick={() => navigate(ROUTES.ACCOUNT)}
+          aria-label="Back to Profile"
+        >
+          <ArrowBackIosNewIcon />
+        </button>
+        <div className="evz-header-content">
           <h1 className="evz-header-title">Help Center</h1>
           <p className="evz-header-subtitle">FAQs, guides, and support</p>
         </div>
@@ -367,14 +409,14 @@ export default function HelpCenterScreen() {
           <button
             type="button"
             className="evz-pill-btn"
-            onClick={() => goTo("/help/contact")}
+            onClick={() => goTo("/support/contact")}
           >
             Contact
           </button>
           <button
             type="button"
             className="evz-pill-btn evz-pill-btn--accent"
-            onClick={() => goTo("/help/report")}
+            onClick={() => goTo("/support/report")}
           >
             Report
           </button>
@@ -421,7 +463,7 @@ export default function HelpCenterScreen() {
           {results.length === 0 && (
             <p className="evz-empty-text">
               No results. Try different keywords or {" "}
-              <a href="/help/contact" className="evz-link-inline">
+              <a href="/support/contact" className="evz-link-inline">
                 contact support
               </a>
               .

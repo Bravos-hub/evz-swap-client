@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -66,33 +65,6 @@ body {
   pointer-events: none;
 }
 
-.evz-header-back {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: none;
-  border-radius: 999px;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  cursor: pointer;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transition: background-color 0.2s ease;
-}
-
-.evz-header-back:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.evz-header-back svg {
-  font-size: 20px;
-}
 
 .evz-profile-picture-section {
   display: flex;
@@ -613,11 +585,6 @@ export default function EditProfileScreen() {
     return initials(name || "EV");
   }, [firstName, lastName, fullName]);
 
-  const handleBack = () => {
-    handleSave();
-    navigate(ROUTES.ACCOUNT);
-  };
-
   const handlePictureEdit = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -668,9 +635,6 @@ export default function EditProfileScreen() {
   return (
     <EvzScreen>
       <div className="evz-header-gradient">
-        <button type="button" className="evz-header-back" onClick={handleBack} aria-label="Back">
-          <ArrowBackIcon />
-        </button>
         <div className="evz-profile-picture-section">
           <div className="evz-profile-picture-wrapper">
             <div className="evz-profile-picture" aria-hidden="true">

@@ -5,13 +5,13 @@
   "icons": [
     {
       "src": "splash.png",
-      "sizes": "192x192",
+      "sizes": "120x120",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
       "src": "splash.png",
-      "sizes": "512x512",
+      "sizes": "120x120",
       "type": "image/png",
       "purpose": "any maskable"
     }

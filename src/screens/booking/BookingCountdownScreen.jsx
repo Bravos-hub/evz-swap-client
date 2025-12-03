@@ -337,7 +337,6 @@ export default function BookingCountdownScreen() {
   }, []);
 
   const remainingMs = Math.max(0, expiryAt - now);
-  const danger = remainingMs <= 60 * 1000;
 
   // Auto-navigate to expired screen when timer hits 0
   useEffect(() => {
