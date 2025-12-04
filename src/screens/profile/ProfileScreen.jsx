@@ -6,6 +6,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LockIcon from '@mui/icons-material/Lock';
+import SecurityIcon from '@mui/icons-material/Security';
 import DevicesIcon from '@mui/icons-material/Devices';
 import HelpIcon from '@mui/icons-material/Help';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -626,6 +627,15 @@ export default function ProfileScreen() {
             <LockIcon />
           </div>
           <span className="evz-menu-text">Wallet Lock</span>
+          <div className="evz-menu-arrow">
+            <ChevronRightIcon />
+          </div>
+        </a>
+        <a href={ROUTES.TWO_FACTOR_SETUP} className="evz-menu-item">
+          <div className="evz-menu-icon">
+            <SecurityIcon />
+          </div>
+          <span className="evz-menu-text">Two-factor Authentication</span>
           <div className="evz-menu-arrow">
             <ChevronRightIcon />
           </div>

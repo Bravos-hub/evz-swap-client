@@ -132,7 +132,6 @@ body {
 }
 
 .evz-footer {
-  margin-top: auto;
   padding-top: 20px;
 }
 

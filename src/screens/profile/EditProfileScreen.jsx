@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditIcon from '@mui/icons-material/Edit';
-import LockIcon from '@mui/icons-material/Lock';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { ROUTES } from "../../router/routes";
 
@@ -226,36 +225,6 @@ body {
   flex: 1;
 }
 
-.evz-change-password-btn {
-  width: 100%;
-  background-color: #1e40af;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.evz-change-password-btn:hover {
-  background-color: #1e3a8a;
-}
-
-.evz-change-password-btn:active {
-  transform: translateY(1px);
-}
-
-.evz-change-password-btn svg {
-  font-size: 20px;
-}
-
 /* Responsive styles for 320px - 420px range */
 @media (max-width: 420px) {
   .evz-header-gradient {
@@ -349,10 +318,6 @@ body {
     width: 70px;
   }
   
-  .evz-change-password-btn {
-    padding: 12px 18px;
-    font-size: 15px;
-  }
 }
 
 @media (max-width: 360px) {
@@ -431,10 +396,6 @@ body {
     width: 65px;
   }
   
-  .evz-change-password-btn {
-    padding: 11px 16px;
-    font-size: 14px;
-  }
 }
 
 @media (max-width: 320px) {
@@ -473,10 +434,6 @@ body {
     font-size: 12px;
   }
   
-  .evz-change-password-btn {
-    padding: 10px 14px;
-    font-size: 13px;
-  }
 }
 `;
 
@@ -624,11 +581,6 @@ export default function EditProfileScreen() {
     navigate(ROUTES.ACCOUNT);
   };
 
-  const handleChangePassword = () => {
-    // Navigate to change password screen (if exists) or show modal
-    alert("Change password functionality - to be implemented");
-  };
-
   // Extract phone number without country code
   const phoneNumberOnly = phoneValue.replace(/^\+\d+\s*/, "");
 
@@ -766,14 +718,6 @@ export default function EditProfileScreen() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
-          <button
-            type="button"
-            className="evz-change-password-btn"
-            onClick={handleChangePassword}
-          >
-            <LockIcon />
-            Change Password
-          </button>
           <button
             type="button"
             onClick={handleSave}
