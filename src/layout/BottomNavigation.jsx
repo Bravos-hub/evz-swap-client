@@ -237,9 +237,9 @@ const hiddenRoutes = [
   ROUTES.SPLASH,
   ROUTES.LANGUAGE_SELECT,
   ROUTES.PERMISSION_INTRO,
-  ROUTES.PHONE_ENTRY,
   ROUTES.OTP_VERIFY,
-  ROUTES.PROFILE_SETUP,
+  ROUTES.LOGIN,
+  ROUTES.SIGNUP,
   ROUTES.VEHICLE_SELECT,
   ROUTES.PROVIDER_SELECT,
   ROUTES.NO_STATIONS_FOUND,
@@ -337,7 +337,7 @@ export default function BottomNavigation() {
   // Check if navigation should be hidden for current route
   const shouldHide = React.useMemo(() => {
     const currentPath = location.pathname;
-    
+
     // Check exact matches
     if (hiddenRoutes.includes(currentPath)) {
       return true;
@@ -377,7 +377,7 @@ export default function BottomNavigation() {
   // Determine active tab
   const getActiveTab = () => {
     const currentPath = location.pathname;
-    
+
     for (const item of navItems) {
       // Check if current path matches any route in this tab's routes
       for (const route of item.routes) {
@@ -394,7 +394,7 @@ export default function BottomNavigation() {
           }
         }
       }
-      
+
       // Also check if path starts with the base route
       if (item.route && currentPath.startsWith(item.route) && item.route !== '/') {
         return item.id;
@@ -408,7 +408,7 @@ export default function BottomNavigation() {
   // Add/remove body class based on visibility
   React.useEffect(() => {
     if (typeof document === 'undefined') return;
-    
+
     if (shouldHide) {
       document.body.classList.remove('evz-nav-visible');
     } else {

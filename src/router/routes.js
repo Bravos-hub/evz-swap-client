@@ -4,16 +4,16 @@ export const ROUTES = {
   SPLASH: '/',
   LANGUAGE_SELECT: '/language',
   PERMISSION_INTRO: '/permissions',
-  PHONE_ENTRY: '/auth/phone',
   OTP_VERIFY: '/auth/otp',
-  
+  LOGIN: '/auth/login',
+  SIGNUP: '/auth/signup',
+
   // Onboarding
-  PROFILE_SETUP: '/onboarding/profile',
   VEHICLE_SELECT: '/onboarding/vehicle',
   PROVIDER_SELECT: '/onboarding/provider',
   PROVIDER_SELECT_ALIAS: '/providers/select', // Alias for PROVIDER_SELECT
   NO_STATIONS_FOUND: '/onboarding/no-stations',
-  
+
   // Stations
   STATION_MAP_LIST: '/stations',
   STATION_DETAILS: '/stations/:id',
@@ -24,7 +24,7 @@ export const ROUTES = {
   GPS_DISABLED: '/stations/gps-disabled',
   MAP_PROVIDER_UNAVAILABLE: '/stations/map-unavailable',
   LOCATION_OUT_OF_BOUNDS: '/stations/out-of-bounds',
-  
+
   // Booking
   HOLD_SELECT: '/booking/hold',
   BOOKING_PAYMENT: '/booking/payment',
@@ -35,7 +35,7 @@ export const ROUTES = {
   TIME_EXTENDED: '/booking/time-extended',
   BOOKING_EXPIRED: '/booking/expired',
   BOOKING_CANCEL: '/booking/cancel',
-  
+
   // Swap
   ARRIVED_SHOW_QR: '/swap/arrived',
   OPERATOR_SWAP_PAYMENT: '/swap/operator/payment',
@@ -65,7 +65,7 @@ export const ROUTES = {
   SWAP_COMPLETED_RATING: '/swap/rating',
   RATE_EXPERIENCE: '/swap/rate',
   RATE_EXPERIENCE_SELF: '/swap/self/rate', // Alternative route for self-service flow
-  
+
   // Wallet
   WALLET_HOME: '/wallet',
   PAYMENT_METHODS: '/wallet/methods',
@@ -76,17 +76,17 @@ export const ROUTES = {
   PAYMENT_FAILED: '/wallet/payment-failed',
   PAYMENT_PENDING: '/wallet/payment-pending',
   REFUND_ISSUED: '/wallet/refund',
-  
+
   // History
   SWAP_SESSIONS: '/history',
   SWAP_SESSION_DETAILS: '/history/:id',
   EXPORT_HISTORY: '/history/export',
-  
+
   // Dashboard
   DASHBOARD: '/dashboard',
   CARBON_SAVINGS: '/dashboard/carbon',
   BATTERY_HEALTH: '/dashboard/battery',
-  
+
   // Profile
   PROFILE: '/profile',
   ACCOUNT: '/account', // Alias for PROFILE
@@ -108,12 +108,12 @@ export const ROUTES = {
   PROMOTIONS: '/profile/promotions',
   REFERRALS: '/profile/referrals',
   PROVIDER_PLANS: '/profile/provider-plans',
-  
+
   // Support
   HELP_CENTER: '/support/help',
   CONTACT_SUPPORT: '/support/contact',
   REPORT_ISSUE: '/support/report',
-  
+
   // System
   OFFLINE_MODE: '/system/offline',
   NETWORK_ERROR: '/system/network-error',

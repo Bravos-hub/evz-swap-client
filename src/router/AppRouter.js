@@ -7,11 +7,11 @@ import BottomNavigation from '../layout/BottomNavigation';
 import SplashScreen from '../screens/auth/SplashScreen';
 import LanguageSelectScreen from '../screens/auth/LanguageSelectScreen';
 import PermissionIntroScreen from '../screens/auth/PermissionIntroScreen';
-import PhoneEntryScreen from '../screens/auth/PhoneEntryScreen';
 import OtpVerifyScreen from '../screens/auth/OtpVerifyScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import SignupScreen from '../screens/auth/SignupScreen';
 
 // Onboarding screens
-import ProfileSetupScreen from '../screens/onboarding/ProfileSetupScreen';
 import VehicleSelectScreen from '../screens/onboarding/VehicleSelectScreen';
 import ProviderSelectScreen from '../screens/onboarding/ProviderSelectScreen';
 import NoStationsFoundScreen from '../screens/onboarding/NoStationsFoundScreen';
@@ -119,16 +119,16 @@ function AppRouter() {
         <Route path={ROUTES.SPLASH} element={<SplashScreen />} />
         <Route path={ROUTES.LANGUAGE_SELECT} element={<LanguageSelectScreen />} />
         <Route path={ROUTES.PERMISSION_INTRO} element={<PermissionIntroScreen />} />
-        <Route path={ROUTES.PHONE_ENTRY} element={<PhoneEntryScreen />} />
         <Route path={ROUTES.OTP_VERIFY} element={<OtpVerifyScreen />} />
-        
+        <Route path={ROUTES.LOGIN} element={<LoginScreen />} />
+        <Route path={ROUTES.SIGNUP} element={<SignupScreen />} />
+
         {/* Onboarding routes */}
-        <Route path={ROUTES.PROFILE_SETUP} element={<ProfileSetupScreen />} />
         <Route path={ROUTES.VEHICLE_SELECT} element={<VehicleSelectScreen />} />
         <Route path={ROUTES.PROVIDER_SELECT} element={<ProviderSelectScreen />} />
         <Route path={ROUTES.PROVIDER_SELECT_ALIAS} element={<ProviderSelectScreen />} />
         <Route path={ROUTES.NO_STATIONS_FOUND} element={<NoStationsFoundScreen />} />
-        
+
         {/* Stations routes */}
         <Route path={ROUTES.STATION_MAP_LIST} element={<StationMapListScreen />} />
         <Route path={ROUTES.STATION_DETAILS} element={<StationDetailsSheet />} />
@@ -139,7 +139,7 @@ function AppRouter() {
         <Route path={ROUTES.GPS_DISABLED} element={<GpsDisabledScreen />} />
         <Route path={ROUTES.MAP_PROVIDER_UNAVAILABLE} element={<MapProviderUnavailableScreen />} />
         <Route path={ROUTES.LOCATION_OUT_OF_BOUNDS} element={<LocationOutOfBoundsScreen />} />
-        
+
         {/* Booking routes */}
         <Route path={ROUTES.HOLD_SELECT} element={<HoldSelectScreen />} />
         <Route path={ROUTES.BOOKING_PAYMENT} element={<BookingPaymentScreen />} />
@@ -150,7 +150,7 @@ function AppRouter() {
         <Route path={ROUTES.TIME_EXTENDED} element={<TimeExtendedScreen />} />
         <Route path={ROUTES.BOOKING_EXPIRED} element={<BookingExpiredScreen />} />
         <Route path={ROUTES.BOOKING_CANCEL} element={<BookingCancelConfirmScreen />} />
-        
+
         {/* Swap routes */}
         <Route path={ROUTES.ARRIVED_SHOW_QR} element={<ArrivedShowQrScreen />} />
         <Route path={ROUTES.OPERATOR_SWAP_PAYMENT} element={<OperatorSwapPaymentScreen />} />
@@ -180,7 +180,7 @@ function AppRouter() {
         <Route path={ROUTES.SWAP_COMPLETED_RATING} element={<SwapCompletedRatingScreen />} />
         <Route path={ROUTES.RATE_EXPERIENCE} element={<RateExperienceScreen />} />
         <Route path={ROUTES.RATE_EXPERIENCE_SELF} element={<RateExperienceScreen />} />
-        
+
         {/* Wallet routes */}
         <Route path={ROUTES.WALLET_HOME} element={<WalletHomeScreen />} />
         <Route path={ROUTES.PAYMENT_METHODS} element={<PaymentMethodsScreen />} />
@@ -192,17 +192,17 @@ function AppRouter() {
         <Route path={ROUTES.PAYMENT_FAILED} element={<PaymentFailedScreen />} />
         <Route path={ROUTES.PAYMENT_PENDING} element={<PaymentPendingScreen />} />
         <Route path={ROUTES.REFUND_ISSUED} element={<RefundIssuedScreen />} />
-        
+
         {/* History routes */}
         <Route path={ROUTES.SWAP_SESSIONS} element={<SwapSessionsScreen />} />
         <Route path={ROUTES.SWAP_SESSION_DETAILS} element={<SwapSessionDetailsScreen />} />
         <Route path={ROUTES.EXPORT_HISTORY} element={<ExportHistoryScreen />} />
-        
+
         {/* Dashboard routes */}
         <Route path={ROUTES.DASHBOARD} element={<DashboardOverviewScreen />} />
         <Route path={ROUTES.CARBON_SAVINGS} element={<CarbonSavingsDetailScreen />} />
         <Route path={ROUTES.BATTERY_HEALTH} element={<BatteryHealthDetailScreen />} />
-        
+
         {/* Profile routes */}
         <Route path={ROUTES.PROFILE} element={<ProfileScreen />} />
         <Route path={ROUTES.ACCOUNT} element={<ProfileScreen />} />
@@ -224,13 +224,13 @@ function AppRouter() {
         <Route path={ROUTES.PROMOTIONS} element={<PromotionsScreen />} />
         <Route path={ROUTES.REFERRALS} element={<ReferralsScreen />} />
         <Route path={ROUTES.PROVIDER_PLANS} element={<ProviderPlansScreen />} />
-        
+
         {/* Support routes */}
         <Route path={ROUTES.HELP_CENTER} element={<HelpCenterScreen />} />
         <Route path={ROUTES.CONTACT_SUPPORT} element={<ContactSupportScreen />} />
         <Route path={ROUTES.CONTACT_SUPPORT_ALIAS} element={<ContactSupportScreen />} />
         <Route path={ROUTES.REPORT_ISSUE} element={<ReportIssueScreen />} />
-        
+
         {/* System routes */}
         <Route path={ROUTES.OFFLINE_MODE} element={<OfflineModeScreen />} />
         <Route path={ROUTES.NETWORK_ERROR} element={<NetworkErrorScreen />} />

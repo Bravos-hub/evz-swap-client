@@ -13,6 +13,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { ROUTES } from "../../router/routes";
+import { authApi } from "../../shared/api/authApi";
 
 const evzStyles = `
 :root {
@@ -427,12 +428,12 @@ function useEvzStyles() {
     if (existing) {
       existing.remove();
     }
-    
+
     const style = document.createElement("style");
     style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
-    
+
     return () => {
       const styleEl = document.getElementById(styleId);
       if (styleEl) {
@@ -505,9 +506,14 @@ export default function ProfileScreen() {
   const profilePicture = getItem(PICTURE_KEY, "");
   const avatarText = useMemo(() => initials(name || "EV"), [name]);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await authApi.logout();
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
     removeItem(AUTH_KEY);
-    goTo("/auth/phone");
+    navigate(ROUTES.LOGIN);
   };
 
   const handleEditProfile = () => {

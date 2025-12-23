@@ -237,12 +237,12 @@ function useEvzStyles() {
     if (existing) {
       existing.remove();
     }
-    
+
     const style = document.createElement("style");
     style.id = styleId;
     style.innerHTML = evzStyles;
     document.head.appendChild(style);
-    
+
     // Cleanup: remove styles when component unmounts
     return () => {
       const styleEl = document.getElementById(styleId);
@@ -281,7 +281,7 @@ export default function PermissionIntroScreen() {
   ];
 
   const handleContinue = () => {
-    navigate(ROUTES.PHONE_ENTRY);
+    navigate(ROUTES.SIGNUP);
   };
 
   return (
