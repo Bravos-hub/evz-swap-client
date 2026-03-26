@@ -1,375 +1,91 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import EvzScreen from "../../shared/components/EvzScreen";
 
-const evzStyles = `
-:root {
-  --evz-primary: #03cd8c;
-  --evz-accent: #f77f00;
-  --evz-bg: #f5f7fb;
-  --evz-surface: #ffffff;
-  --evz-surface-soft: #edf1f9;
-  --evz-text-primary: #111827;
-  --evz-text-secondary: #6b7280;
-  --evz-border-subtle: rgba(15, 23, 42, 0.08);
-}
+export default function SafetyChecklistScreen({
+  nextPath = "/swap/self/scan-return",
+}) {
+  const navigate = useNavigate();
+  const [items, setItems] = useState([
+    { id: 1, text: "Vehicle is parked and engine is OFF", ok: false },
+    { id: 2, text: "Battery is disconnected from vehicle", ok: false },
+    { id: 3, text: "I am wearing protective gear if needed", ok: false },
+    { id: 4, text: "No visible damage or leakage on battery", ok: false },
+  ]);
 
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--evz-bg);
-}
+  const toggle = (id) => {
+    setItems((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, ok: !it.ok } : it))
+    );
+  };
 
-.evz-app {
-  min-height: 100vh;
-  background: var(--evz-bg);
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  color: var(--evz-text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif;
-}
+  const allOk = items.every((it) => it.ok);
 
-.evz-screen {
-  width: 100%;
-  max-width: 420px;
-  min-height: 100vh;
-  padding: 24px 20px 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-.evz-header {
-  padding-bottom: 10px;
-}
-
-.evz-header-title {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0 0 4px;
-}
-
-.evz-header-subtitle {
-  font-size: 13px;
-  color: var(--evz-text-secondary);
-  margin: 0;
-}
-
-.evz-content {
-  flex: 1;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.evz-footer {
-  padding-top: 12px;
-}
-
-.evz-toggle-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.evz-toggle-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.evz-toggle-input {
-  width: 40px;
-  height: 22px;
-  appearance: none;
-  position: relative;
-  border-radius: 999px;
-  background-color: #e5e7eb;
-  outline: none;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.evz-toggle-input::before {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: #ffffff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.25);
-  transition: transform 0.15s ease;
-}
-
-.evz-toggle-input:checked {
-  background-color: var(--evz-primary);
-}
-
-.evz-toggle-input:checked::before {
-  transform: translateX(18px);
-}
-
-.evz-toggle-label {
-  font-size: 14px;
-}
-
-.evz-helper-text {
-  margin-top: 6px;
-  font-size: 11px;
-  color: var(--evz-text-secondary);
-}
-
-.evz-footer-row {
-  display: flex;
-  gap: 8px;
-}
-
-.evz-button {
-  flex: 1;
-  border-radius: 999px;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.evz-button--secondary {
-  background-color: transparent;
-  color: var(--evz-accent);
-}
-
-.evz-button--secondary:hover {
-  text-decoration: underline;
-}
-
-.evz-button--primary {
-  background-color: var(--evz-primary);
-  color: #ffffff;
-  box-shadow: 0 10px 22px rgba(3, 205, 140, 0.32);
-}
-
-.evz-button--primary:active {
-  transform: translateY(1px);
-  box-shadow: 0 6px 14px rgba(3, 205, 140, 0.28);
-}
-
-.evz-button--disabled {
-  opacity: 0.45;
-  cursor: default;
-  pointer-events: none;
-  box-shadow: none;
-}
-
-/* Responsive styles for 320px - 420px range */
-@media (max-width: 420px) {
-  .evz-screen {
-    max-width: 100%;
-    padding: 20px 16px 16px;
-  }
-  
-  .evz-header-title {
-    font-size: 20px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 370px) {
-  .evz-screen {
-    padding: 18px 14px 14px;
-  }
-  
-  .evz-header-title {
-    font-size: 19px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 360px) {
-  .evz-screen {
-    padding: 16px 12px 12px;
-  }
-  
-  .evz-header-title {
-    font-size: 18px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 340px) {
-  .evz-screen {
-    padding: 16px 10px 10px;
-  }
-  
-  .evz-header-title {
-    font-size: 17px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 320px) {
-  .evz-screen {
-    padding: 14px 8px 8px;
-  }
-  
-  .evz-header-title {
-    font-size: 16px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-  
-  .evz-header-title {
-    font-size: 16px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-`;
-
-function useEvzStyles() {
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const styleId = "evz-mobile-styles-p08-s01";
-    // Remove existing style element if it exists
-    const existing = document.getElementById(styleId);
-    if (existing) {
-      existing.remove();
+  const handleContinue = () => {
+    if (allOk) {
+      navigate(nextPath);
     }
-    
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.innerHTML = evzStyles;
-    document.head.appendChild(style);
-    
-    // Cleanup: remove styles when component unmounts
-    return () => {
-      const styleEl = document.getElementById(styleId);
-      if (styleEl) {
-        styleEl.remove();
-      }
-    };
-  }, []);
-}
+  };
 
-function EvzScreen({ children }) {
-  return (
-    <div className="evz-app">
-      <div className="evz-screen">{children}</div>
-    </div>
-  );
-}
-
-export default function SafetyChecklistScreen({ nextPath = "/swap/self/station-scan" }) {
-  useEvzStyles();
-
-  const [vehicleOff, setVehicleOff] = useState(false);
-  const [glovesOn, setGlovesOn] = useState(false);
-
-  const canContinue = vehicleOff && glovesOn;
-
-  const handleContinue = (e) => {
-    if (!canContinue) {
-      e.preventDefault();
-      return;
-    }
-
-    try {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(
-          "evz.self.safety.vehicleOff",
-          String(vehicleOff)
-        );
-        window.localStorage.setItem(
-          "evz.self.safety.glovesOn",
-          String(glovesOn)
-        );
-        window.localStorage.setItem("evz.self.safety.ok", "true");
-      }
-    } catch {
-      // ignore
-    }
+  const handleCancel = () => {
+    navigate("/dashboard");
   };
 
   return (
     <EvzScreen>
-      <header className="evz-header">
-        <h1 className="evz-header-title">Prepare for swap</h1>
-        <p className="evz-header-subtitle">
-          Confirm these quick safety steps before continuing
+      <header className="pb-[10px]">
+        <h1 className="text-[22px] font-extrabold m-0 mb-1">Safety Checklist</h1>
+        <p className="text-[13px] text-evz-textSecondary m-0">
+          Please confirm these safety steps before proceeding with the swap.
         </p>
       </header>
 
-      <main className="evz-content">
-        <div className="evz-toggle-list">
-          <label className="evz-toggle-item">
-            <input
-              type="checkbox"
-              className="evz-toggle-input"
-              checked={vehicleOff}
-              onChange={(e) => setVehicleOff(e.target.checked)}
-            />
-            <span className="evz-toggle-label">
-              Vehicle is <strong>powered off</strong> and secured
-            </span>
-          </label>
-
-          <label className="evz-toggle-item">
-            <input
-              type="checkbox"
-              className="evz-toggle-input"
-              checked={glovesOn}
-              onChange={(e) => setGlovesOn(e.target.checked)}
-            />
-            <span className="evz-toggle-label">
-              Safety gloves are worn and area is clear
-            </span>
-          </label>
-
-          <p className="evz-helper-text">
-            Tip: keep bystanders away and follow the kiosk instructions.
-          </p>
+      <main className="flex-1 pt-2">
+        <div className="flex flex-col gap-2.5">
+          {items.map((it) => (
+            <label
+              key={it.id}
+              className={`flex items-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer ${
+                it.ok
+                  ? "bg-[#e8fff6] border-evz-primary"
+                  : "bg-evz-surfaceSoft border-transparent"
+              }`}
+            >
+              <input
+                type="checkbox"
+                className="w-5 h-5 rounded border-gray-300 text-evz-primary focus:ring-evz-primary"
+                checked={it.ok}
+                onChange={() => toggle(it.id)}
+              />
+              <span className={`text-sm font-medium ${it.ok ? "text-evz-textPrimary" : "text-evz-textSecondary"}`}>
+                {it.text}
+              </span>
+            </label>
+          ))}
         </div>
       </main>
 
-      <footer className="evz-footer">
-        <div className="evz-footer-row">
-          <a href="/booking/confirmed" className="evz-button evz-button--secondary">
-            Back
-          </a>
-
-          <a
-            href={canContinue ? nextPath : "#"}
-            onClick={handleContinue}
-            aria-disabled={!canContinue}
-            className={
-              "evz-button evz-button--primary" +
-              (!canContinue ? " evz-button--disabled" : "")
-            }
+      <footer className="pt-5">
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            className={`w-full rounded-full p-[11px_16px] text-sm font-semibold cursor-pointer transition-all ${
+              allOk
+                ? "bg-evz-accent text-white shadow-[0_8px_18px_rgba(247,127,0,0.3)]"
+                : "bg-[#a6a6a6] text-white cursor-default"
+            }`}
+            onClick={allOk ? handleContinue : undefined}
+            disabled={!allOk}
           >
-            Continue
-          </a>
+            Continue to scan
+          </button>
+          <button
+            type="button"
+            className="w-full rounded-full p-[11px_16px] text-sm font-semibold cursor-pointer border border-transparent bg-transparent text-evz-textSecondary hover:text-evz-textPrimary"
+            onClick={handleCancel}
+          >
+            Cancel swap
+          </button>
         </div>
       </footer>
     </EvzScreen>

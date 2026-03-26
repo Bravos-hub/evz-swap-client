@@ -1,296 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
-
-const evzStyles = `
-:root {
-  --evz-primary: #03cd8c;
-  --evz-accent: #f77f00;
-  --evz-bg: #ffffff;
-  --evz-surface-soft: #f2f2f2;
-  --evz-text-primary: #111827;
-  --evz-text-secondary: #6b7280;
-  --evz-border-subtle: rgba(15, 23, 42, 0.08);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--evz-bg);
-}
-
-.evz-app {
-  min-height: 100vh;
-  background-color: var(--evz-bg);
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  color: var(--evz-text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif;
-}
-
-.evz-screen {
-  width: 100%;
-  max-width: 420px;
-  min-height: 100vh;
-  padding: 24px 20px 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-.evz-header {
-  padding-bottom: 8px;
-}
-
-.evz-header-title {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0 0 4px;
-}
-
-.evz-header-subtitle {
-  font-size: 13px;
-  color: var(--evz-text-secondary);
-  margin: 0;
-}
-
-.evz-divider {
-  height: 1px;
-  width: 100%;
-  background-color: #e5e7eb;
-  margin-top: 10px;
-}
-
-.evz-main {
-  padding-top: 12px;
-}
-
-.evz-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.evz-card {
-  border-radius: 16px;
-  background-color: var(--evz-surface-soft);
-  padding: 12px 14px 10px;
-}
-
-.evz-card--clickable {
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.evz-card--clickable:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.evz-card--clickable:active {
-  transform: translateY(0);
-}
-
-.evz-card--impact {
-  background-color: #e8fff6;
-  border: 1px solid var(--evz-primary);
-}
-
-.evz-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.evz-card-title {
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.evz-chip {
-  padding: 2px 10px;
-  border-radius: 999px;
-  background-color: #a6a6a6;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.evz-kpi-value-main {
-  font-size: 26px;
-  font-weight: 900;
-}
-
-.evz-kpi-value-main--green {
-  color: var(--evz-primary);
-}
-
-.evz-kpi-caption {
-  font-size: 11px;
-  color: var(--evz-text-secondary);
-}
-
-.evz-footer {
-  padding-top: 20px;
-}
-
-.evz-footer-row {
-  display: flex;
-  gap: 8px;
-}
-
-.evz-btn-secondary,
-.evz-btn-primary {
-  flex: 1;
-  border-radius: 999px;
-  padding: 11px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-.evz-btn-secondary {
-  border-color: #a6a6a6;
-  background-color: #ffffff;
-  color: var(--evz-text-primary);
-}
-
-.evz-btn-secondary:hover {
-  background-color: #f9fafb;
-}
-
-.evz-btn-primary {
-  border-color: transparent;
-  background-color: var(--evz-accent);
-  color: #ffffff;
-  box-shadow: 0 10px 22px rgba(247, 127, 0, 0.32);
-}
-
-.evz-btn-primary:active {
-  transform: translateY(1px);
-  box-shadow: 0 6px 14px rgba(247, 127, 0, 0.28);
-}
-
-/* Responsive styles for 320px - 420px range */
-@media (max-width: 420px) {
-  .evz-screen {
-    max-width: 100%;
-    padding: 20px 16px 16px;
-  }
-  
-  .evz-header-title {
-    font-size: 20px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 370px) {
-  .evz-screen {
-    padding: 18px 14px 14px;
-  }
-  
-  .evz-header-title {
-    font-size: 19px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 360px) {
-  .evz-screen {
-    padding: 16px 12px 12px;
-  }
-  
-  .evz-header-title {
-    font-size: 18px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 340px) {
-  .evz-screen {
-    padding: 16px 10px 10px;
-  }
-  
-  .evz-header-title {
-    font-size: 17px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 320px) {
-  .evz-screen {
-    padding: 14px 8px 8px;
-  }
-  
-  .evz-header-title {
-    font-size: 16px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-  
-  .evz-header-title {
-    font-size: 16px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-`;
+import EvzScreen from "../../shared/components/EvzScreen";
 
 const KWH_KEY = "evz.analytics.kwhLog";
 const CO2F_KEY = "evz.analytics.co2PerKWh";
 const SESS_KEY = "evz.swap.sessions";
-
-function useEvzStyles() {
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const styleId = "evz-mobile-styles-p19-s01";
-    // Remove existing style element if it exists
-    const existing = document.getElementById(styleId);
-    if (existing) {
-      existing.remove();
-    }
-    
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.innerHTML = evzStyles;
-    document.head.appendChild(style);
-    
-    // Cleanup: remove styles when component unmounts
-    return () => {
-      const styleEl = document.getElementById(styleId);
-      if (styleEl) {
-        styleEl.remove();
-      }
-    };
-  }, []);
-}
-
-function EvzScreen({ children }) {
-  return (
-    <div className="evz-app">
-      <div className="evz-screen">{children}</div>
-    </div>
-  );
-}
 
 function safeLocalStorage() {
   if (typeof window === "undefined") return null;
@@ -354,13 +69,7 @@ function lastDays(arr, days) {
   });
 }
 
-function goTo(path) {
-  if (typeof window === "undefined") return;
-  window.location.assign(path);
-}
-
 export default function DashboardOverviewScreen() {
-  useEvzStyles();
   const navigate = useNavigate();
 
   const [kwhLog, setKwhLog] = useState(() => getJSON(KWH_KEY, []));
@@ -388,28 +97,28 @@ export default function DashboardOverviewScreen() {
 
   return (
     <EvzScreen>
-      <header className="evz-header">
-        <h1 className="evz-header-title">Dashboard</h1>
-        <p className="evz-header-subtitle">Energy &amp; impact (last 7 days)</p>
-        <div className="evz-divider" />
+      <header className="pb-2">
+        <h1 className="text-[22px] font-extrabold m-0 mb-1">Dashboard</h1>
+        <p className="text-[13px] text-evz-textSecondary m-0">Energy &amp; impact (last 7 days)</p>
+        <div className="h-px w-full bg-gray-200 mt-[10px]" />
       </header>
 
-      <main className="evz-main">
-        <div className="evz-stack">
-          <section className="evz-card">
-            <div className="evz-card-header">
+      <main className="pt-3">
+        <div className="flex flex-col gap-[10px]">
+          <section className="rounded-2xl bg-evz-surfaceSoft p-[12px_14px_10px]">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="evz-card-title">Energy used</div>
-                <div className="evz-kpi-value-main evz-kpi-value-main--green">
+                <div className="text-[13px] font-extrabold">Energy used</div>
+                <div className="text-[26px] font-black text-evz-primary">
                   {kwh7.toFixed(2)} kWh
                 </div>
               </div>
-              <span className="evz-chip">7 days</span>
+              <span className="px-[10px] py-[2px] rounded-full bg-[#a6a6a6] text-white text-[11px] font-semibold">7 days</span>
             </div>
           </section>
 
           <section 
-            className="evz-card evz-card--clickable"
+            className="rounded-2xl bg-evz-surfaceSoft p-[12px_14px_10px] cursor-pointer transition-all duration-150 hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] active:translate-y-0"
             onClick={() => navigate(ROUTES.SWAP_SESSIONS)}
             role="button"
             tabIndex={0}
@@ -421,41 +130,38 @@ export default function DashboardOverviewScreen() {
             }}
             aria-label="View swap history"
           >
-            <div className="evz-card-title">Swaps completed</div>
-            <div className="evz-kpi-value-main">{swaps7}</div>
+            <div className="text-[13px] font-extrabold">Swaps completed</div>
+            <div className="text-[26px] font-black">{swaps7}</div>
           </section>
 
-          <section className="evz-card evz-card--impact">
-            <div className="evz-card-title">CO₂ impact (estimate)</div>
-            <div className="evz-kpi-caption">
+          <section className="rounded-2xl bg-[#e8fff6] border border-evz-primary p-[12px_14px_10px]">
+            <div className="text-[13px] font-extrabold">CO₂ impact (estimate)</div>
+            <div className="text-[11px] text-evz-textSecondary">
               Factor: {co2Factor.toFixed(2)} kg CO₂ / kWh
             </div>
-            <div
-              className="evz-kpi-value-main evz-kpi-value-main--green"
-              style={{ marginTop: 4 }}
-            >
+            <div className="text-[26px] font-black text-evz-primary mt-1">
               {co2kg7.toFixed(2)} kg
             </div>
-            <div className="evz-kpi-caption">
+            <div className="text-[11px] text-evz-textSecondary">
               Adjust factor in Carbon savings
             </div>
           </section>
         </div>
       </main>
 
-      <footer className="evz-footer">
-        <div className="evz-footer-row">
+      <footer className="pt-5">
+        <div className="flex gap-2">
           <button
             type="button"
-            className="evz-btn-secondary"
-            onClick={() => goTo("/dashboard/carbon")}
+            className="flex-1 rounded-full p-[11px_16px] text-sm font-semibold cursor-pointer border border-[#a6a6a6] bg-white text-evz-textPrimary hover:bg-gray-50"
+            onClick={() => navigate("/dashboard/carbon")}
           >
             Carbon savings
           </button>
           <button
             type="button"
-            className="evz-btn-primary"
-            onClick={() => goTo("/dashboard/battery")}
+            className="flex-1 rounded-full p-[11px_16px] text-sm font-semibold cursor-pointer border border-transparent bg-evz-accent text-white shadow-[0_10px_22px_rgba(247,127,0,0.32)] active:translate-y-px active:shadow-[0_6px_14px_rgba(247,127,0,0.28)]"
+            onClick={() => navigate("/dashboard/battery")}
           >
             Battery health
           </button>
