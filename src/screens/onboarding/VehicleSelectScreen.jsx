@@ -1,346 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
-
-const evzStyles = `
-:root {
-  --evz-primary: #03cd8c;
-  --evz-accent: #f77f00;
-  --evz-bg: #f5f7fb;
-  --evz-surface: #ffffff;
-  --evz-surface-soft: #edf1f9;
-  --evz-text-primary: #111827;
-  --evz-text-secondary: #6b7280;
-  --evz-border-subtle: rgba(15, 23, 42, 0.08);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--evz-bg);
-}
-
-.evz-app {
-  min-height: 100vh;
-  background: var(--evz-bg);
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  color: var(--evz-text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
-    "SF Pro Text", sans-serif;
-}
-
-.evz-screen {
-  width: 100%;
-  max-width: 420px;
-  min-height: 100vh;
-  padding: 24px 20px 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-.evz-header {
-  padding-bottom: 8px;
-}
-
-.evz-header-title {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0 0 4px;
-}
-
-.evz-header-subtitle {
-  font-size: 13px;
-  color: var(--evz-text-secondary);
-  margin: 0;
-}
-
-.evz-content {
-  flex: 1;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.evz-footer {
-  padding-top: 10px;
-}
-
-.evz-button {
-  width: 100%;
-  border-radius: 999px;
-  padding: 14px 18px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease,
-    background-color 0.12s ease, opacity 0.12s ease;
-  outline: none;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border: none;
-}
-
-.evz-button--primary {
-  background-color: var(--evz-accent);
-  color: #ffffff;
-  box-shadow: 0 10px 22px rgba(247, 127, 0, 0.35);
-}
-
-.evz-button--primary:active {
-  transform: translateY(1px);
-  box-shadow: 0 6px 14px rgba(247, 127, 0, 0.3);
-}
-
-.evz-button--secondary {
-  background-color: transparent;
-  color: var(--evz-text-primary);
-  border: 1px solid var(--evz-border-subtle);
-  box-shadow: none;
-}
-
-.evz-button--secondary:active {
-  transform: translateY(1px);
-}
-
-.evz-button--disabled {
-  opacity: 0.55;
-  cursor: default;
-}
-
-.evz-footer-row {
-  display: flex;
-  gap: 8px;
-}
-
-.evz-footer-hint {
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--evz-text-secondary);
-}
-
-.evz-filter-group {
-  margin-top: 14px;
-  background-color: var(--evz-surface);
-  border-radius: 999px;
-  padding: 3px;
-  border: 1px solid var(--evz-border-subtle);
-  display: flex;
-  gap: 4px;
-}
-
-.evz-filter-pill {
-  flex: 1;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  padding: 8px 10px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--evz-text-secondary);
-  cursor: pointer;
-}
-
-.evz-filter-pill--active {
-  background: var(--evz-primary);
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(3, 205, 140, 0.3);
-}
-
-.evz-vehicle-list {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.evz-vehicle-item {
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid var(--evz-border-subtle);
-  background-color: var(--evz-surface);
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-}
-
-.evz-vehicle-item--active {
-  border-color: rgba(3, 205, 140, 0.9);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-}
-
-.evz-vehicle-main {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.evz-vehicle-name {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.evz-vehicle-type {
-  font-size: 12px;
-  color: var(--evz-text-secondary);
-  text-transform: capitalize;
-}
-
-.evz-vehicle-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.evz-vehicle-plate {
-  font-size: 13px;
-  color: var(--evz-text-secondary);
-}
-
-.evz-chip {
-  border-radius: 999px;
-  padding: 3px 9px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.evz-chip--success {
-  background-color: var(--evz-primary);
-  color: #ffffff;
-}
-
-.evz-chip--muted {
-  background-color: #a6a6a6;
-  color: #ffffff;
-}
-
-.evz-vehicle-empty {
-  margin-top: 12px;
-  font-size: 13px;
-  color: var(--evz-text-secondary);
-  text-align: center;
-}
-
-/* Responsive styles for 320px - 420px range */
-@media (max-width: 420px) {
-  .evz-screen {
-    max-width: 100%;
-    padding: 20px 16px 16px;
-  }
-  
-  .evz-header-title {
-    font-size: 20px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 370px) {
-  .evz-screen {
-    padding: 18px 14px 14px;
-  }
-  
-  .evz-header-title {
-    font-size: 19px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 360px) {
-  .evz-screen {
-    padding: 16px 12px 12px;
-  }
-  
-  .evz-header-title {
-    font-size: 18px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 340px) {
-  .evz-screen {
-    padding: 16px 10px 10px;
-  }
-  
-  .evz-header-title {
-    font-size: 17px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 320px) {
-  .evz-screen {
-    padding: 14px 8px 8px;
-  }
-  
-  .evz-header-title {
-    font-size: 16px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-  
-  .evz-header-title {
-    font-size: 16px;
-  }
-  
-  .evz-header-subtitle {
-    font-size: 10px;
-  }
-}
-`;
-
-function useEvzStyles() {
-  useEffect(() => {
-    const styleId = "evz-mobile-styles";
-    // Remove existing style element if it exists
-    const existing = document.getElementById(styleId);
-    if (existing) {
-      existing.remove();
-    }
-    
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.innerHTML = evzStyles;
-    document.head.appendChild(style);
-    
-    // Cleanup: remove styles when component unmounts
-    return () => {
-      const styleEl = document.getElementById(styleId);
-      if (styleEl) {
-        styleEl.remove();
-      }
-    };
-  }, []);
-}
-
-function EvzScreen({ children }) {
-  return (
-    <div className="evz-app">
-      <div className="evz-screen">{children}</div>
-    </div>
-  );
-}
+import EvzScreen from "../../shared/components/EvzScreen";
 
 const LS_KEY = "evz.vehicles";
 
@@ -371,7 +32,6 @@ function loadVehicles() {
 }
 
 export default function VehicleSelectScreen() {
-  useEvzStyles();
   const navigate = useNavigate();
 
   const [filter, setFilter] = useState("all");
@@ -415,31 +75,20 @@ export default function VehicleSelectScreen() {
 
   const handleContinue = () => {
     if (!canContinue || !selected) return;
-    
-    try {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("evz.selectedVehicleId", selected.id);
-      }
-    } catch {
-      // ignore
-    }
-
     navigate(`${ROUTES.PROVIDER_SELECT}?vehicleId=${encodeURIComponent(selected.id)}`);
   };
 
   const handleAddVehicle = () => {
-    // Navigate to vehicle add/edit screen (if exists) or stay on this screen
-    navigate(ROUTES.VEHICLE_DETAILS.replace(':id', 'new'));
+    navigate(ROUTES.VEHICLE_DETAILS.replace(":id", "new"));
   };
 
-
   return (
-    <EvzScreen>
-      <header className="evz-header">
-        <h1 className="evz-header-title">Select a vehicle</h1>
-        <p className="evz-header-subtitle">Choose the vehicle to swap for</p>
+    <EvzScreen className="bg-[#f8fafc]">
+      <header className="mb-6 pt-2">
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Select a vehicle</h1>
+        <p className="text-sm text-slate-500 font-medium">Choose the vehicle to swap for</p>
 
-        <div className="evz-filter-group" role="tablist" aria-label="Vehicle type">
+        <div className="flex bg-white p-1 rounded-full border border-slate-100 mt-6 shadow-sm">
           {[
             { key: "all", label: "All" },
             { key: "car", label: "Car" },
@@ -450,11 +99,11 @@ export default function VehicleSelectScreen() {
               <button
                 key={f.key}
                 type="button"
-                role="tab"
-                aria-selected={active}
-                className={
-                  "evz-filter-pill" + (active ? " evz-filter-pill--active" : "")
-                }
+                className={`flex-1 py-2.5 rounded-full text-sm font-bold transition-all ${
+                  active 
+                    ? "bg-evz-primary text-white shadow-lg shadow-evz-primary/30" 
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
                 onClick={() => setFilter(f.key)}
               >
                 {f.label}
@@ -464,76 +113,91 @@ export default function VehicleSelectScreen() {
         </div>
       </header>
 
-      <main className="evz-content">
-        <ul className="evz-vehicle-list">
+      <main className="flex-1">
+        <div className="space-y-3">
           {filtered.map((v) => {
             const active = v.id === selectedId;
             return (
-              <li key={v.id}>
-                <button
-                  type="button"
-                  className={
-                    "evz-vehicle-item" +
-                    (active ? " evz-vehicle-item--active" : "")
-                  }
-                  onClick={() => handleSelect(v.id)}
-                >
-                  <div className="evz-vehicle-main">
-                    <span className="evz-vehicle-name">{v.name}</span>
-                    <span className="evz-vehicle-type">
-                      · {v.type === "car" ? "Car" : "Bike"}
+              <button
+                key={v.id}
+                type="button"
+                className={`w-full p-4 rounded-3xl border text-left transition-all ${
+                  active 
+                    ? "bg-white border-evz-primary ring-4 ring-evz-primary/5 shadow-xl shadow-slate-200/50 scale-[1.02]" 
+                    : "bg-white border-slate-100 border-transparent shadow-sm hover:border-slate-200"
+                }`}
+                onClick={() => handleSelect(v.id)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-black text-slate-900">{v.name}</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded-md">
+                      {v.type}
                     </span>
                   </div>
-                  <div className="evz-vehicle-meta">
-                    <span className="evz-vehicle-plate">{v.plate}</span>
-                    <span
-                      className={
-                        "evz-chip " +
-                        (v.swapCapable ? "evz-chip--success" : "evz-chip--muted")
-                      }
-                    >
-                      {v.swapCapable ? "Swap ready" : "Not swap capable"}
-                    </span>
-                  </div>
-                </button>
-              </li>
+                  {active && (
+                    <div className="w-5 h-5 rounded-full bg-evz-primary flex items-center justify-center text-white">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-slate-500 tracking-wide">{v.plate}</span>
+                  <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter ${
+                    v.swapCapable 
+                      ? "bg-evz-primary/10 text-evz-primary" 
+                      : "bg-slate-100 text-slate-400"
+                  }`}>
+                    {v.swapCapable ? "Swap Ready" : "Non-Compatible"}
+                  </span>
+                </div>
+              </button>
             );
           })}
 
           {filtered.length === 0 && (
-            <li className="evz-vehicle-empty">No vehicles found for this filter.</li>
+            <div className="py-20 text-center">
+              <div className="text-4xl mb-4">🔍</div>
+              <p className="text-slate-400 font-bold">No vehicles found in this category.</p>
+            </div>
           )}
-        </ul>
+        </div>
       </main>
 
-      <footer className="evz-footer">
-        <div className="evz-footer-row">
+      <footer className="pt-6 space-y-3">
+        {selected && !canContinue && (
+          <div className="bg-orange-50 border border-orange-100 p-3 rounded-2xl flex items-center gap-3 mb-2">
+            <span className="text-lg">⚠️</span>
+            <p className="text-[11px] font-bold text-orange-700 leading-tight">
+              Selected vehicle {selected.name} is not compatible with battery swapping.
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={handleAddVehicle}
-            className="evz-button evz-button--secondary"
+            className="w-full py-4 rounded-full border border-slate-200 bg-white text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all active:scale-95"
           >
-            Add vehicle
+            Add Vehicle
           </button>
 
           <button
             type="button"
             onClick={handleContinue}
             disabled={!canContinue}
-            className={
-              "evz-button evz-button--primary" +
-              (!canContinue ? " evz-button--disabled" : "")
-            }
+            className={`w-full py-4 rounded-full font-black text-sm transition-all shadow-xl ${
+              canContinue 
+                ? "bg-evz-accent text-white shadow-evz-accent/30 active:scale-95 cursor-pointer" 
+                : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+            }`}
           >
-            {selected ? `Continue as ${selected.name}` : "Continue"}
+            Continue
           </button>
         </div>
-
-        {selected && !canContinue && (
-          <p className="evz-footer-hint">
-            Selected vehicle is not swap-capable.
-          </p>
-        )}
       </footer>
     </EvzScreen>
   );
