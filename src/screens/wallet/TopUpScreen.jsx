@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { walletApi } from "../../shared/api/walletApi";
 
 const evzStyles = `
 :root {
@@ -352,9 +353,39 @@ export default function TopUpScreen({ nextPath = "/wallet" }) {
       return "";
     }
   });
+  const [methods, setMethods] = useState(() => getJSON(METHODS_KEY, []));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const methods = useMemo(() => getJSON(METHODS_KEY, []), []);
   const currency = getCurrency();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadMethods = async () => {
+      try {
+        const result = await walletApi.getPaymentMethods();
+        const next = result.map((method) => ({
+          ...method,
+          id: method.id || method.paymentMethodId || method._id,
+          label: method.label || method.name || method.brand || "Payment method",
+          type: method.type || method.methodType || "method",
+        })).filter((method) => method.id);
+        if (!cancelled && next.length > 0) {
+          setMethods(next);
+          setJSON(METHODS_KEY, next);
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) setError("Showing saved payment methods while offline.");
+      }
+    };
+
+    loadMethods();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const finalAmount = useMemo(() => {
     const customVal = Number(String(custom).replace(/\D+/g, "")) || 0;
@@ -378,7 +409,7 @@ export default function TopUpScreen({ nextPath = "/wallet" }) {
     setMethodId(e.target.value);
   };
 
-  const handlePrimaryClick = (e) => {
+  const handlePrimaryClick = async (e) => {
     if (!hasMethods) {
       // Navigate to methods screen
       return;
@@ -387,30 +418,43 @@ export default function TopUpScreen({ nextPath = "/wallet" }) {
       e.preventDefault();
       return;
     }
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    const currentBal = getNumber(BAL_KEY, 0);
-    const newBal = currentBal + finalAmount;
-    setNumber(BAL_KEY, newBal);
+    try {
+      await walletApi.topUp(finalAmount, methodId);
 
-    const method = methods.find((m) => m.id === methodId) || {
-      label: "Unknown",
-      type: "unknown",
-    };
+      const currentBal = getNumber(BAL_KEY, 0);
+      const newBal = currentBal + finalAmount;
+      setNumber(BAL_KEY, newBal);
 
-    const entry = {
-      id: "tx" + Date.now(),
-      ts: Date.now(),
-      type: "topup",
-      amount: finalAmount,
-      methodId,
-      methodType: method.type,
-      methodLabel: method.label,
-      note: "Wallet top-up",
-    };
+      const method = methods.find((m) => m.id === methodId) || {
+        label: "Unknown",
+        type: "unknown",
+      };
 
-    const ledger = getJSON(LEDGER_KEY, []);
-    ledger.push(entry);
-    setJSON(LEDGER_KEY, ledger);
+      const entry = {
+        id: "tx" + Date.now(),
+        ts: Date.now(),
+        type: "topup",
+        amount: finalAmount,
+        methodId,
+        methodType: method.type,
+        methodLabel: method.label,
+        note: "Wallet top-up",
+      };
+
+      const ledger = getJSON(LEDGER_KEY, []);
+      ledger.push(entry);
+      setJSON(LEDGER_KEY, ledger);
+      window.location.assign(nextPath);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Top-up failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const primaryLabel = hasMethods
@@ -488,6 +532,7 @@ export default function TopUpScreen({ nextPath = "/wallet" }) {
             </p>
           )}
         </section>
+        {error && <p className="evz-helper-text" style={{ color: "#b91c1c" }}>{error}</p>}
       </main>
 
       <footer className="evz-footer">
@@ -501,7 +546,7 @@ export default function TopUpScreen({ nextPath = "/wallet" }) {
           }
           aria-disabled={!canPay && hasMethods}
         >
-          {primaryLabel}
+          {loading ? "Processing..." : primaryLabel}
         </a>
       </footer>
     </EvzScreen>

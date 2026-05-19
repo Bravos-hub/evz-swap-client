@@ -14,6 +14,7 @@ import SignupScreen from '../screens/auth/SignupScreen';
 // Onboarding screens
 import VehicleSelectScreen from '../screens/onboarding/VehicleSelectScreen';
 import ProviderSelectScreen from '../screens/onboarding/ProviderSelectScreen';
+import ProfileSetupScreen from '../screens/onboarding/ProfileSetupScreen';
 import NoStationsFoundScreen from '../screens/onboarding/NoStationsFoundScreen';
 
 // Stations screens
@@ -124,6 +125,7 @@ function AppRouter() {
         <Route path={ROUTES.SIGNUP} element={<SignupScreen />} />
 
         {/* Onboarding routes */}
+        <Route path={ROUTES.PROFILE_SETUP} element={<ProfileSetupScreen />} />
         <Route path={ROUTES.VEHICLE_SELECT} element={<VehicleSelectScreen />} />
         <Route path={ROUTES.PROVIDER_SELECT} element={<ProviderSelectScreen />} />
         <Route path={ROUTES.PROVIDER_SELECT_ALIAS} element={<ProviderSelectScreen />} />

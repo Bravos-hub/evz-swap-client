@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { authApi } from "../../shared/api/authApi";
 
 const evzStyles = `
 :root {
@@ -321,6 +322,8 @@ export default function OtpVerifyScreen() {
   const [otp, setOtp] = useState("");
   const [touched, setTouched] = useState(false);
   const [secs, setSecs] = useState(30);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const isValid = useMemo(() => /^\d{6}$/.test(otp), [otp]);
 
@@ -336,37 +339,52 @@ export default function OtpVerifyScreen() {
     setOtp(value);
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (!isValid) {
       setTouched(true);
       return;
     }
 
+    setLoading(true);
+    setError("");
     try {
+      const result = await authApi.verifyOtp(msisdn, otp);
       if (typeof window !== "undefined") {
         window.localStorage.setItem("evz.auth.verified", "true");
         window.localStorage.setItem("evz.msisdn", msisdn);
         window.localStorage.setItem("evz.session", "active");
       }
-    } catch {
-      // ignore
-    }
 
-    // Check if user already has profile setup
-    const hasProfile = typeof window !== "undefined" && 
-      window.localStorage.getItem("evz.profile.name");
-    
-    if (hasProfile) {
-      navigate(ROUTES.DASHBOARD);
-    } else {
-      navigate(`${ROUTES.PROFILE_SETUP}?msisdn=${encodeURIComponent(msisdn)}`);
+      const userName = result.user?.name || result.user?.displayName;
+      const hasProfile = Boolean(
+        userName ||
+          (typeof window !== "undefined" &&
+            window.localStorage.getItem("evz.profile.name")),
+      );
+
+      if (hasProfile) {
+        navigate(ROUTES.DASHBOARD);
+      } else {
+        navigate(`${ROUTES.PROFILE_SETUP}?msisdn=${encodeURIComponent(msisdn)}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Verification failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (secs > 0) return;
-    setSecs(30);
-    // In a real app, trigger resend using msisdn here
+    setError("");
+    try {
+      await authApi.sendOtp(msisdn);
+      setSecs(30);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Could not resend the code.");
+    }
   };
 
   return (
@@ -422,6 +440,10 @@ export default function OtpVerifyScreen() {
               Resend code
             </button>
           </div>
+
+          {error && (
+            <p className="evz-helper-text evz-helper-text--error">{error}</p>
+          )}
         </div>
       </main>
 
@@ -429,9 +451,10 @@ export default function OtpVerifyScreen() {
         <button
           type="button"
           onClick={handleVerify}
+          disabled={loading}
           className="evz-button evz-button--primary"
         >
-          Verify &amp; Continue
+          {loading ? "Verifying..." : "Verify & Continue"}
         </button>
       </footer>
     </EvzScreen>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { providersApi } from "../../shared/api/providersApi";
 
 const evzStyles = `
 :root {
@@ -266,6 +267,14 @@ const PROVIDERS = [
   { id: "open", name: "Open Standard" },
 ];
 
+function normalizeProvider(provider) {
+  return {
+    ...provider,
+    id: provider.id || provider.providerId || provider._id || provider.code,
+    name: provider.name || provider.displayName || provider.legalName || "Provider",
+  };
+}
+
 export default function ProviderSelectScreen() {
   useEvzStyles();
   const navigate = useNavigate();
@@ -279,6 +288,38 @@ export default function ProviderSelectScreen() {
       return "";
     }
   });
+  const [providers, setProviders] = useState(PROVIDERS);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadProviders = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const result = await providersApi.getEligibleProviders();
+        const next = result.map(normalizeProvider).filter((p) => p.id);
+        if (!cancelled && next.length > 0) {
+          setProviders(next);
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          setProviders(PROVIDERS);
+          setError("Showing default providers while the backend is unavailable.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadProviders();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Get return path from URL params
   const searchParams = new URLSearchParams(location.search);
@@ -326,7 +367,7 @@ export default function ProviderSelectScreen() {
 
       <main className="evz-content">
         <div className="evz-provider-grid">
-          {PROVIDERS.map((p) => {
+          {providers.map((p) => {
             const active = selected === p.id;
             return (
               <button
@@ -343,6 +384,8 @@ export default function ProviderSelectScreen() {
             );
           })}
         </div>
+        {loading && <p className="evz-header-subtitle">Loading providers...</p>}
+        {error && <p className="evz-header-subtitle">{error}</p>}
       </main>
 
       <footer className="evz-footer">

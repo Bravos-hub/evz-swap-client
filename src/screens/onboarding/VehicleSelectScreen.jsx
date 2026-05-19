@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { vehiclesApi } from "../../shared/api/vehiclesApi";
 import EvzScreen from "../../shared/components/EvzScreen";
 
 const LS_KEY = "evz.vehicles";
@@ -31,11 +32,24 @@ function loadVehicles() {
   }
 }
 
+function normalizeVehicle(vehicle) {
+  return {
+    ...vehicle,
+    id: vehicle.id || vehicle.vehicleId || vehicle._id,
+    name: vehicle.name || vehicle.model || vehicle.displayName || "Vehicle",
+    type: (vehicle.type || vehicle.vehicleType || "bike").toLowerCase(),
+    plate: vehicle.plate || vehicle.plateNumber || vehicle.registrationNumber || "Unregistered",
+    swapCapable: vehicle.swapCapable ?? vehicle.supportsBatterySwap ?? vehicle.batterySwapCapable ?? true,
+  };
+}
+
 export default function VehicleSelectScreen() {
   const navigate = useNavigate();
 
   const [filter, setFilter] = useState("all");
   const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(() => {
     if (typeof window === "undefined") return "";
     try {
@@ -46,8 +60,39 @@ export default function VehicleSelectScreen() {
   });
 
   useEffect(() => {
-    seedIfEmpty();
-    setVehicles(loadVehicles());
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const result = await vehiclesApi.getVehicles();
+        const next = result.map(normalizeVehicle).filter((v) => v.id);
+        if (next.length > 0) {
+          setVehicles(next);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(LS_KEY, JSON.stringify(next));
+          }
+          return;
+        }
+        seedIfEmpty();
+        setVehicles(loadVehicles());
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          seedIfEmpty();
+          setVehicles(loadVehicles());
+          setError("Showing saved vehicles while the backend is unavailable.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filtered = useMemo(
@@ -73,8 +118,13 @@ export default function VehicleSelectScreen() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!canContinue || !selected) return;
+    try {
+      await vehiclesApi.setActiveVehicle(selected.id);
+    } catch (err) {
+      console.error(err);
+    }
     navigate(`${ROUTES.PROVIDER_SELECT}?vehicleId=${encodeURIComponent(selected.id)}`);
   };
 
@@ -114,6 +164,14 @@ export default function VehicleSelectScreen() {
       </header>
 
       <main className="flex-1">
+        {loading && (
+          <p className="mb-3 text-sm font-bold text-slate-400">Loading vehicles...</p>
+        )}
+        {error && (
+          <p className="mb-3 rounded-2xl bg-orange-50 px-4 py-3 text-xs font-bold text-orange-700">
+            {error}
+          </p>
+        )}
         <div className="space-y-3">
           {filtered.map((v) => {
             const active = v.id === selectedId;

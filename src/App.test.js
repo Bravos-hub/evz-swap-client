@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { ROUTES } from './router/routes';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test('defines onboarding and support route aliases used by the router', () => {
+  expect(ROUTES.PROFILE_SETUP).toBe('/onboarding/profile');
+  expect(ROUTES.TOP_UP_ALIAS).toBe('/wallet/top-up');
+  expect(ROUTES.CONTACT_SUPPORT_ALIAS).toBe('/help/contact');
 });

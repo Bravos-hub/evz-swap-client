@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { walletApi } from "../../shared/api/walletApi";
 
 const evzStyles = `
 :root {
@@ -507,26 +508,73 @@ function fmtAmount(n, curr) {
 export default function WalletHomeScreen() {
   useEvzStyles();
 
-  const [balance] = useState(() => getNumber(WALLET_BAL_KEY, 0));
+  const [balance, setBalance] = useState(() => getNumber(WALLET_BAL_KEY, 0));
   const [ledger, setLedger] = useState(() => getJSON(WALLET_LEDGER_KEY, []));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const currency = getCurrency();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const existing = getJSON(WALLET_LEDGER_KEY, []);
-    if (!existing || existing.length === 0) {
-      const demo = [
-        {
-          id: "tx" + Date.now(),
-          ts: Date.now(),
-          type: "topup",
-          amount: 0,
-          note: "Wallet created",
-        },
-      ];
-      setLedger(demo);
-      setJSON(WALLET_LEDGER_KEY, demo);
-    }
+    let cancelled = false;
+
+    const loadWallet = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const [balanceResult, txResult] = await Promise.all([
+          walletApi.getBalance(),
+          walletApi.getTransactions(1, 20),
+        ]);
+        const nextBalance = Number(
+          balanceResult?.balance ??
+            balanceResult?.amount ??
+            balanceResult?.data?.balance ??
+            0,
+        );
+        const nextTransactions = txResult.transactions.map((tx) => ({
+          ...tx,
+          id: tx.id || tx.transactionId || tx.reference || `tx${tx.createdAt || Date.now()}`,
+          ts: tx.ts || tx.createdAt || tx.created_at || Date.now(),
+          type: tx.type || tx.kind || "transaction",
+          amount: Number(tx.amount ?? tx.value ?? 0),
+          note: tx.note || tx.description || tx.status || "Wallet transaction",
+        }));
+        if (!cancelled) {
+          setBalance(nextBalance);
+          setLedger(nextTransactions);
+          setJSON(WALLET_LEDGER_KEY, nextTransactions);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(WALLET_BAL_KEY, String(nextBalance));
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          setError("Showing saved wallet data while the backend is unavailable.");
+          const existing = getJSON(WALLET_LEDGER_KEY, []);
+          if (!existing || existing.length === 0) {
+            const demo = [
+              {
+                id: "tx" + Date.now(),
+                ts: Date.now(),
+                type: "topup",
+                amount: 0,
+                note: "Wallet created",
+              },
+            ];
+            setLedger(demo);
+            setJSON(WALLET_LEDGER_KEY, demo);
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadWallet();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const recent = useMemo(
@@ -545,7 +593,7 @@ export default function WalletHomeScreen() {
         <section className="evz-card">
           <div className="evz-card-title">Current balance</div>
           <div className="evz-balance-value">
-            {fmtAmount(balance, currency)}
+            {loading ? "Loading..." : fmtAmount(balance, currency)}
           </div>
           <div className="evz-actions-row">
             <a href="/wallet/topup" className="evz-button">
@@ -558,6 +606,7 @@ export default function WalletHomeScreen() {
         </section>
 
         <div className="evz-divider" />
+        {error && <p className="evz-empty-secondary">{error}</p>}
 
         <section>
           <div className="evz-list-title">Recent activity</div>

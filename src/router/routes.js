@@ -9,6 +9,7 @@ export const ROUTES = {
   SIGNUP: '/auth/signup',
 
   // Onboarding
+  PROFILE_SETUP: '/onboarding/profile',
   VEHICLE_SELECT: '/onboarding/vehicle',
   PROVIDER_SELECT: '/onboarding/provider',
   PROVIDER_SELECT_ALIAS: '/providers/select', // Alias for PROVIDER_SELECT
@@ -69,7 +70,8 @@ export const ROUTES = {
   // Wallet
   WALLET_HOME: '/wallet',
   PAYMENT_METHODS: '/wallet/methods',
-  TOP_UP: '/wallet/topup',// Alias for TOP_UP
+  TOP_UP: '/wallet/topup',
+  TOP_UP_ALIAS: '/wallet/top-up',
   TRANSACTIONS_LIST: '/wallet/transactions',
   TRANSACTION_DETAILS: '/wallet/transactions/:id',
   INVOICES: '/wallet/invoices',
@@ -112,6 +114,7 @@ export const ROUTES = {
   // Support
   HELP_CENTER: '/support/help',
   CONTACT_SUPPORT: '/support/contact',
+  CONTACT_SUPPORT_ALIAS: '/help/contact',
   REPORT_ISSUE: '/support/report',
 
   // System

@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import { swapApi } from "../../shared/api/swapApi";
 
 const evzStyles = `
 :root {
@@ -361,6 +363,25 @@ function fmtDuration(ms) {
   return `${m} min ${r} s`;
 }
 
+function normalizeSwapSession(session, fallbackId) {
+  if (!session) return null;
+  const id = session.id || session.swapSessionId || session.reservationId || fallbackId;
+  const status = String(session.status || session.type || "").toLowerCase();
+  return {
+    ...session,
+    reservationId: id,
+    when: session.when || session.completedAt || session.createdAt || session.startedAt || Date.now(),
+    stationName: session.stationName || session.station?.name || "Station",
+    stationArea: session.stationArea || session.station?.area || session.station?.city || "",
+    vehicleId: session.vehicleId || session.vehicle?.id || "",
+    type: status.includes("upcoming") || status.includes("reserved") ? "upcoming" : "completed",
+    durationMs: session.durationMs || session.durationSeconds * 1000 || 0,
+    totalUGX: session.totalUGX || session.amount || session.total || 0,
+    holdMinutes: session.holdMinutes || 0,
+    feeUGX: session.feeUGX || session.fee || 0,
+  };
+}
+
 function Row({ label, value }) {
   return (
     <div className="evz-row">
@@ -372,13 +393,48 @@ function Row({ label, value }) {
 
 export default function SwapSessionDetailsScreen() {
   useEvzStyles();
+  const { id: routeId } = useParams();
 
-  const rsv = useQueryRSV();
+  const rsv = useQueryRSV() || routeId || "";
   const saved = useMemo(() => getJSON(SESS_KEY, []), []);
   const [session, setSession] = useState(() =>
     saved.find((s) => s.reservationId === rsv) || null
   );
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const vehicles = useMemo(() => loadVehicles(), []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSession = async () => {
+      if (!rsv) return;
+      setLoading(true);
+      setError("");
+      try {
+        const [detail, technicalEvents] = await Promise.all([
+          swapApi.getSwapSession(rsv),
+          swapApi.getSwapTechnicalEvents(rsv).catch(() => []),
+        ]);
+        const normalized = normalizeSwapSession(detail?.data || detail, rsv);
+        if (!cancelled && normalized) {
+          setSession(normalized);
+          setEvents(Array.isArray(technicalEvents) ? technicalEvents : []);
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) setError("Showing saved session detail while the backend is unavailable.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadSession();
+    return () => {
+      cancelled = true;
+    };
+  }, [rsv]);
 
   useEffect(() => {
     if (session || !rsv) return;
@@ -449,6 +505,8 @@ export default function SwapSessionDetailsScreen() {
         </div>
         <h1 className="evz-header-title">Session details</h1>
         <p className="evz-header-subtitle">{subtitle}</p>
+        {loading && <p className="evz-header-subtitle">Loading backend detail...</p>}
+        {error && <p className="evz-header-subtitle">{error}</p>}
       </header>
 
       {session && (
@@ -485,6 +543,8 @@ export default function SwapSessionDetailsScreen() {
               <Row label="Fee" value={fmtAmount(session.feeUGX)} />
             </>
           )}
+
+          {events.length > 0 && <Row label="Events" value={`${events.length} technical events`} />}
         </main>
       )}
 

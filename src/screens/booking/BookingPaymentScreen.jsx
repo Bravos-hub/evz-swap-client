@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { bookingApi } from "../../shared/api/bookingApi";
+import { walletApi } from "../../shared/api/walletApi";
 
 const evzStyles = `
 :root {
@@ -400,27 +402,73 @@ export default function BookingPaymentScreen() {
   const fee = Number(get("holdFee", "0"));
 
   const [method, setMethod] = useState(() => get("method", "evzpay"));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (!minutes || !fee) return;
 
-    const reservationId = `RSV-${Date.now()}`;
-    const expiryAt = Date.now() + minutes * 60 * 1000;
+    setLoading(true);
+    setError("");
+
+    const stationId = get("stationId");
+    let reservationId = `RSV-${Date.now()}`;
+    let expiryAt = Date.now() + minutes * 60 * 1000;
 
     try {
+      const booking = await bookingApi.createBooking({
+        stationId,
+        holdMinutes: minutes,
+        amount: fee,
+        currency: "UGX",
+        paymentMethod: method,
+        type: "battery_swap",
+      });
+      const bookingData = booking?.data || booking;
+      reservationId =
+        bookingData?.id ||
+        bookingData?.bookingId ||
+        bookingData?.reservationId ||
+        reservationId;
+      expiryAt = bookingData?.expiryAt
+        ? new Date(bookingData.expiryAt).getTime()
+        : expiryAt;
+
+      const intent = await walletApi.createPaymentIntent({
+        bookingId: reservationId,
+        amount: fee,
+        currency: "UGX",
+        paymentMethodId: method,
+        context: "booking_hold",
+      });
+      const intentData = intent?.data || intent;
+      if (intentData?.id || intentData?.paymentIntentId) {
+        await walletApi.reconcilePaymentIntent(
+          intentData.id || intentData.paymentIntentId,
+          { status: "confirmed", bookingId: reservationId },
+        );
+      }
+
       if (typeof window !== "undefined") {
         window.localStorage.setItem(BOOK_NS + "reservationId", reservationId);
         window.localStorage.setItem(BOOK_NS + "expiryAt", String(expiryAt));
         window.localStorage.setItem(BOOK_NS + "method", method);
         window.localStorage.setItem(BOOK_NS + "paid", "true");
+        if (intentData?.id || intentData?.paymentIntentId) {
+          window.localStorage.setItem(
+            BOOK_NS + "paymentIntentId",
+            intentData.id || intentData.paymentIntentId,
+          );
+        }
       }
-    } catch {
-      // ignore
-    }
 
-    // Navigate to booking countdown on success
-    // In a real app, you'd check payment status first
-    navigate(ROUTES.BOOKING_COUNTDOWN);
+      navigate(ROUTES.BOOKING_COUNTDOWN);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Could not create the booking payment.");
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -474,6 +522,7 @@ export default function BookingPaymentScreen() {
           <p className="evz-note">
             Booking fee reserves a pack and is <strong>non-refundable</strong>.
           </p>
+          {error && <p className="evz-note" style={{ color: "#b91c1c" }}>{error}</p>}
         </section>
       </main>
 
@@ -481,9 +530,10 @@ export default function BookingPaymentScreen() {
         <button
           type="button"
           onClick={handlePay}
+          disabled={loading || !minutes || !fee}
           className="evz-button evz-button--primary"
         >
-          Pay {fmtUGX(fee)} &amp; Continue
+          {loading ? "Processing..." : `Pay ${fmtUGX(fee)} & Continue`}
         </button>
       </footer>
     </EvzScreen>

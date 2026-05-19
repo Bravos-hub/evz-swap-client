@@ -12,20 +12,23 @@ export default function ProfileSetupScreen() {
     location: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleComplete = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       const res = await authApi.updateProfile(formData);
       if (res.success) {
-        navigate(ROUTES.DASHBOARD);
-      } else {
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem("evz.profile.name", formData.displayName);
+        }
         navigate(ROUTES.DASHBOARD);
       }
     } catch (err) {
       console.error(err);
-      navigate(ROUTES.DASHBOARD);
+      setError(err.message || "Could not save your profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -75,6 +78,12 @@ export default function ProfileSetupScreen() {
               onChange={(e) => setFormData({...formData, bio: e.target.value})}
             />
           </div>
+
+          {error && (
+            <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+              {error}
+            </p>
+          )}
 
           <button 
             type="submit" 

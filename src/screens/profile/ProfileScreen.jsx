@@ -485,11 +485,6 @@ function removeItem(key) {
   }
 }
 
-function goTo(path) {
-  if (typeof window === "undefined") return;
-  window.location.assign(path);
-}
-
 function initials(name) {
   const trimmed = (name || "").trim();
   if (!trimmed) return "EV";

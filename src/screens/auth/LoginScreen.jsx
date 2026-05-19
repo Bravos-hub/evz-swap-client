@@ -11,23 +11,21 @@ export default function LoginScreen() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       const type = identifier.includes("@") ? "email" : "phone";
       const res = await authApi.login({ identifier, password, type });
       if (res.success) {
         navigate(ROUTES.DASHBOARD);
-      } else {
-        // Fallback for demo
-        navigate(ROUTES.DASHBOARD);
       }
     } catch (err) {
       console.error(err);
-      // Fallback for demo
-      navigate(ROUTES.DASHBOARD);
+      setError(err.message || "Sign in failed. Please check your details and try again.");
     } finally {
       setLoading(false);
     }
@@ -35,12 +33,10 @@ export default function LoginScreen() {
 
   const handleSocialLogin = async (provider) => {
     try {
-      const res = await authApi.socialLogin(provider);
-      if (res.success) {
-        navigate(ROUTES.DASHBOARD);
-      }
+      await authApi.socialLogin(provider);
     } catch (err) {
       console.error(err);
+      setError(err.message || "Social login is not available yet.");
     }
   };
 
@@ -81,6 +77,12 @@ export default function LoginScreen() {
             />
           </div>
 
+          {error && (
+            <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+              {error}
+            </p>
+          )}
+
           <button 
             type="submit" 
             className="w-full py-5 bg-evz-primary text-white rounded-[2rem] font-black text-lg shadow-xl shadow-evz-primary/30 active:scale-[0.98] transition-all disabled:opacity-50"
@@ -99,6 +101,7 @@ export default function LoginScreen() {
         <div className="grid grid-cols-2 gap-4">
           <button 
             onClick={() => handleSocialLogin('google')}
+            disabled
             className="flex items-center justify-center gap-3 py-4 rounded-2xl border border-slate-100 bg-white hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
           >
             <GoogleIcon sx={{ fontSize: 20 }} />
@@ -106,6 +109,7 @@ export default function LoginScreen() {
           </button>
           <button 
             onClick={() => handleSocialLogin('apple')}
+            disabled
             className="flex items-center justify-center gap-3 py-4 rounded-2xl border border-slate-100 bg-white hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
           >
             <AppleIcon sx={{ fontSize: 20 }} />

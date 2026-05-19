@@ -16,6 +16,7 @@ export default function SignupScreen() {
     agree: false
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -32,18 +33,15 @@ export default function SignupScreen() {
       return;
     }
     setLoading(true);
+    setError("");
     try {
       const res = await authApi.signup(formData);
       if (res.success) {
         navigate(ROUTES.PROFILE_SETUP);
-      } else {
-        // Fallback for demo
-        navigate(ROUTES.PROFILE_SETUP);
       }
     } catch (err) {
       console.error(err);
-      // Fallback for demo
-      navigate(ROUTES.PROFILE_SETUP);
+      setError(err.message || "Could not create your account. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -51,12 +49,10 @@ export default function SignupScreen() {
 
   const handleSocialSignup = async (provider) => {
     try {
-      const res = await authApi.socialLogin(provider);
-      if (res.success) {
-        navigate(ROUTES.PROFILE_SETUP);
-      }
+      await authApi.socialLogin(provider);
     } catch (err) {
       console.error(err);
+      setError(err.message || "Social signup is not available yet.");
     }
   };
 
@@ -138,6 +134,12 @@ export default function SignupScreen() {
             </span>
           </label>
 
+          {error && (
+            <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+              {error}
+            </p>
+          )}
+
           <button 
             type="submit" 
             className="w-full py-5 bg-evz-primary text-white rounded-[2rem] font-black text-lg shadow-xl shadow-evz-primary/30 active:scale-[0.98] transition-all disabled:opacity-50 mt-6"
@@ -156,6 +158,7 @@ export default function SignupScreen() {
         <div className="grid grid-cols-2 gap-4">
           <button 
             onClick={() => handleSocialSignup('google')}
+            disabled
             className="flex items-center justify-center gap-3 py-4 rounded-2xl border border-slate-100 bg-white hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
           >
             <GoogleIcon sx={{ fontSize: 20 }} />
@@ -163,6 +166,7 @@ export default function SignupScreen() {
           </button>
           <button 
             onClick={() => handleSocialSignup('apple')}
+            disabled
             className="flex items-center justify-center gap-3 py-4 rounded-2xl border border-slate-100 bg-white hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
           >
             <AppleIcon sx={{ fontSize: 20 }} />

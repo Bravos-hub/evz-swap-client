@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { swapApi } from "../../shared/api/swapApi";
 
 const evzStyles = `
 :root {
@@ -581,6 +582,25 @@ function collectSessions() {
   return { past, upcoming };
 }
 
+function normalizeSwapSession(session) {
+  const id = session.id || session.swapSessionId || session.reservationId || session._id;
+  const status = String(session.status || session.type || "").toLowerCase();
+  return {
+    ...session,
+    id,
+    reservationId: id,
+    when: session.when || session.completedAt || session.createdAt || session.startedAt || Date.now(),
+    stationName: session.stationName || session.station?.name || "Station",
+    stationArea: session.stationArea || session.station?.area || session.station?.city || "",
+    vehicleId: session.vehicleId || session.vehicle?.id || "",
+    type: status.includes("upcoming") || status.includes("reserved") ? "upcoming" : "completed",
+    durationMs: session.durationMs || session.durationSeconds * 1000 || 0,
+    totalUGX: session.totalUGX || session.amount || session.total || 0,
+    holdMinutes: session.holdMinutes || 0,
+    feeUGX: session.feeUGX || session.fee || 0,
+  };
+}
+
 function fmtAmount(n) {
   return `UGX ${Number(n || 0).toLocaleString("en-UG")}`;
 }
@@ -593,10 +613,47 @@ export default function SwapSessionsScreen() {
   useEvzStyles();
 
   const [tab, setTab] = useState("past");
-  const { past, upcoming } = useMemo(() => collectSessions(), []);
+  const [sessions, setSessions] = useState(() => collectSessions());
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const vehicles = useMemo(() => loadVehicles(), []);
 
-  const rows = tab === "past" ? past : upcoming;
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSessions = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const result = await swapApi.getSwapSessions();
+        const normalized = result.map(normalizeSwapSession).filter((s) => s.id);
+        const past = normalized
+          .filter((s) => s.type !== "upcoming")
+          .sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
+        const upcoming = normalized
+          .filter((s) => s.type === "upcoming")
+          .sort((a, b) => new Date(a.when).getTime() - new Date(b.when).getTime());
+        if (!cancelled && normalized.length > 0) {
+          setSessions({ past, upcoming });
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          setSessions(collectSessions());
+          setError("Showing saved history while the backend is unavailable.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadSessions();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const rows = tab === "past" ? sessions.past : sessions.upcoming;
 
   const renderSecondary = (s) => {
     if (s.type === "upcoming") {
@@ -654,11 +711,12 @@ export default function SwapSessionsScreen() {
       <div className="evz-divider" />
 
       <main>
+        {loading && <p className="evz-empty-secondary">Loading sessions...</p>}
+        {error && <p className="evz-empty-secondary">{error}</p>}
         <ul className="evz-list">
           {rows.map((s) => {
-            const href = `/history/details?rsv=${encodeURIComponent(
-              s.reservationId || ""
-            )}`;
+            const sessionId = s.reservationId || s.id || s.when;
+            const href = `/history/${encodeURIComponent(sessionId)}?rsv=${encodeURIComponent(sessionId)}`;
             return (
               <li key={`${s.type}_${s.reservationId || s.when}`}>
                 <a href={href} className="evz-row-link">

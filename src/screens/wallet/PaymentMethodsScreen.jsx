@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { walletApi } from "../../shared/api/walletApi";
 
 const evzStyles = `
 :root {
@@ -391,6 +392,8 @@ export default function PaymentMethodsScreen() {
 
   const [methods, setMethods] = useState(() => getJSON(METHODS_KEY, []));
   const [defId, setDefId] = useState(() => getDefaultId());
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [type, setType] = useState("mobile_money");
   const [label, setLabel] = useState("");
@@ -418,24 +421,77 @@ export default function PaymentMethodsScreen() {
     }
   }, [type]);
 
-  const handleAdd = () => {
-    if (!canAdd) return;
-    const id = createId();
-    const entry = {
-      id,
-      type,
-      label: label.trim(),
-      detail: detail.trim(),
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadMethods = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const result = await walletApi.getPaymentMethods();
+        const next = result.map((m) => ({
+          ...m,
+          id: m.id || m.paymentMethodId || m._id,
+          type: m.type || m.methodType || "method",
+          label: m.label || m.name || m.brand || "Payment method",
+          detail: m.detail || m.maskedNumber || m.last4 || m.identifier || "",
+        })).filter((m) => m.id);
+        if (!cancelled && next.length > 0) {
+          setMethods(next);
+          setJSON(METHODS_KEY, next);
+          if (!defId) {
+            setDefId(next[0].id);
+            setDefaultId(next[0].id);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) setError("Showing saved methods while the backend is unavailable.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     };
-    const next = [...methods, entry];
-    setMethods(next);
-    setJSON(METHODS_KEY, next);
-    if (!defId) {
-      setDefId(id);
-      setDefaultId(id);
+
+    loadMethods();
+    return () => {
+      cancelled = true;
+    };
+  }, [defId]);
+
+  const handleAdd = async () => {
+    if (!canAdd) return;
+    setLoading(true);
+    setError("");
+    try {
+      const created = await walletApi.addPaymentMethod({
+        type,
+        label: label.trim(),
+        detail: detail.trim(),
+      });
+      const createdData = created?.data || created;
+      const id = createdData?.id || createdData?.paymentMethodId || createId();
+      const entry = {
+        ...createdData,
+        id,
+        type,
+        label: label.trim(),
+        detail: detail.trim(),
+      };
+      const next = [...methods, entry];
+      setMethods(next);
+      setJSON(METHODS_KEY, next);
+      if (!defId) {
+        setDefId(id);
+        setDefaultId(id);
+      }
+      setLabel("");
+      setDetail("");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Could not add this payment method.");
+    } finally {
+      setLoading(false);
     }
-    setLabel("");
-    setDetail("");
   };
 
   const handleRemove = (id) => {
@@ -466,6 +522,8 @@ export default function PaymentMethodsScreen() {
       <main className="evz-content">
         <section>
           <div className="evz-section-title">Saved methods</div>
+          {loading && <p className="evz-empty-secondary">Loading payment methods...</p>}
+          {error && <p className="evz-empty-secondary">{error}</p>}
           <ul className="evz-list">
             {methods.length > 0 ? (
               methods.map((m) => (

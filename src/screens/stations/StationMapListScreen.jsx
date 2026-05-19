@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { stationsApi } from "../../shared/api/stationsApi";
 
 const evzStyles = `
 :root {
@@ -378,6 +379,33 @@ function loadStations(providerId) {
   }
 }
 
+function normalizeStation(station) {
+  const connectors = station.connectors || station.ports || [];
+  const ready =
+    station.ready ??
+    station.readyPacks ??
+    station.availablePacks ??
+    connectors.filter?.((port) => port.status === "available").length ??
+    0;
+  const charging =
+    station.charging ??
+    station.chargingPacks ??
+    connectors.filter?.((port) => port.status === "charging").length ??
+    0;
+
+  return {
+    ...station,
+    id: station.id || station.stationId || station.siteId || station._id,
+    provider: station.provider || station.providerId || station.network || "",
+    name: station.name || station.displayName || station.code || "Station",
+    area: station.area || station.city || station.address?.city || station.address || "",
+    distanceKm: Number(station.distanceKm ?? station.distance ?? 0),
+    ready,
+    charging,
+    type: station.type || station.serviceMode || "self",
+  };
+}
+
 export default function StationMapListScreen() {
   useEvzStyles();
   const navigate = useNavigate();
@@ -396,10 +424,49 @@ export default function StationMapListScreen() {
   });
 
   const [stations, setStations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    seedStations();
-    setStations(loadStations(providerId));
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const result = await stationsApi.getNearbyStations(undefined, undefined, 10, {
+          provider: providerId,
+          providerId,
+        });
+        const next = result.map(normalizeStation).filter((s) => s.id);
+        if (!cancelled && next.length > 0) {
+          const filteredNext = providerId
+            ? next.filter((s) => !s.provider || s.provider === providerId)
+            : next;
+          setStations(filteredNext);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(ST_KEY, JSON.stringify(filteredNext));
+          }
+          return;
+        }
+        seedStations();
+        setStations(loadStations(providerId));
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          seedStations();
+          setStations(loadStations(providerId));
+          setError("Showing saved station data while the backend is unavailable.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [providerId]);
 
   const selected = useMemo(
@@ -458,6 +525,8 @@ export default function StationMapListScreen() {
       <div className="evz-divider" />
 
       <main className="evz-content">
+        {loading && <p className="evz-header-subtitle">Loading nearby stations...</p>}
+        {error && <p className="evz-header-subtitle">{error}</p>}
         <ul className="evz-station-list">
           {stations.map((s) => (
             <li key={s.id}>

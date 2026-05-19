@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { stationsApi } from "../../shared/api/stationsApi";
 
 const evzStyles = `
 :root {
@@ -249,6 +250,29 @@ function loadStationById(id) {
   }
 }
 
+function normalizeStation(station) {
+  if (!station) return null;
+  const connectors = station.connectors || station.ports || [];
+  return {
+    ...station,
+    id: station.id || station.stationId || station.siteId || station._id,
+    name: station.name || station.displayName || station.code || "Station",
+    area: station.area || station.city || station.address?.city || station.address || "",
+    ready:
+      station.ready ??
+      station.readyPacks ??
+      station.availablePacks ??
+      connectors.filter?.((port) => port.status === "available").length ??
+      0,
+    charging:
+      station.charging ??
+      station.chargingPacks ??
+      connectors.filter?.((port) => port.status === "charging").length ??
+      0,
+    type: station.type || station.serviceMode || "self",
+  };
+}
+
 export default function StationDetailsSheet() {
   useEvzStyles();
   const navigate = useNavigate();
@@ -260,7 +284,44 @@ export default function StationDetailsSheet() {
     return getStationIdFromLocation();
   });
 
-  const station = useMemo(() => loadStationById(stationId), [stationId]);
+  const [station, setStation] = useState(() => normalizeStation(loadStationById(stationId)));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      if (!stationId) return;
+      setLoading(true);
+      setError("");
+      try {
+        const result = await stationsApi.getStationDetails(stationId);
+        const next = normalizeStation(result?.data || result);
+        if (!cancelled && next) {
+          setStation(next);
+          if (typeof window !== "undefined") {
+            const all = JSON.parse(window.localStorage.getItem(ST_KEY) || "[]");
+            const merged = [next, ...all.filter((s) => s.id !== next.id)];
+            window.localStorage.setItem(ST_KEY, JSON.stringify(merged));
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          setStation(normalizeStation(loadStationById(stationId)));
+          setError("Showing saved station detail while the backend is unavailable.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [stationId]);
 
   const handleContinue = () => {
     if (!station) return;
@@ -284,6 +345,8 @@ export default function StationDetailsSheet() {
       <div className="evz-divider" />
 
       <main className="evz-content">
+        {loading && <p className="evz-notes-text">Loading station...</p>}
+        {error && <p className="evz-notes-text">{error}</p>}
         {!station && (
           <p className="evz-notes-text">
             No station selected. {" "}

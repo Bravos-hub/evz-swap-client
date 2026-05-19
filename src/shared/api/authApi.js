@@ -1,57 +1,108 @@
-/**
- * Authentication API functions
- */
+import { apiRequest } from './apiClient';
+import { clearSession, updateSession, writeSession } from './sessionStorage';
+
+function normalizeAuthResult(payload) {
+  const session = writeSession(payload);
+  return {
+    ...payload,
+    ...session,
+    success: true,
+  };
+}
+
+function loginBody({ identifier, password, type }) {
+  const field = type === 'phone' ? 'phone' : 'email';
+  return {
+    identifier,
+    [field]: identifier,
+    password,
+  };
+}
 
 export const authApi = {
-  /**
-   * Send OTP to phone number
-   */
   async sendOtp(phoneNumber) {
-    // TODO: Implement actual API call
-    return { success: true, message: 'OTP sent' };
+    return apiRequest('/auth/otp/send', {
+      method: 'POST',
+      auth: false,
+      body: {
+        phoneNumber,
+        phone: phoneNumber,
+        msisdn: phoneNumber,
+      },
+    });
   },
 
-  /**
-   * Verify OTP
-   */
   async verifyOtp(phoneNumber, otp) {
-    // TODO: Implement actual API call
-    return { success: true, token: 'mock-token' };
+    const payload = await apiRequest('/auth/otp/verify', {
+      method: 'POST',
+      auth: false,
+      body: {
+        phoneNumber,
+        phone: phoneNumber,
+        msisdn: phoneNumber,
+        otp,
+        code: otp,
+      },
+    });
+    return normalizeAuthResult(payload);
   },
 
-  /**
-   * Logout user
-   */
   async logout() {
-    // TODO: Implement actual API call
+    try {
+      await apiRequest('/auth/logout', { method: 'POST' });
+    } finally {
+      clearSession();
+    }
     return { success: true };
   },
 
-  /**
-   * Login with email/phone and password
-   */
   async login(credentials) {
-    // credentials: { identifier, password, type: 'email' | 'phone' }
-    // TODO: Implement actual API call
-    return { success: true, token: 'mock-token', user: { name: 'Test User', email: 'test@example.com' } };
+    const payload = await apiRequest('/auth/login', {
+      method: 'POST',
+      auth: false,
+      body: loginBody(credentials),
+    });
+    return normalizeAuthResult(payload);
   },
 
-  /**
-   * Signup with details
-   */
   async signup(userDetails) {
-    // userDetails: { name, email, phone, password }
-    // TODO: Implement actual API call
-    return { success: true, token: 'mock-token', user: { name: userDetails.name, email: userDetails.email } };
+    const payload = await apiRequest('/auth/register', {
+      method: 'POST',
+      auth: false,
+      body: {
+        name: userDetails.name,
+        email: userDetails.email,
+        phone: userDetails.phone,
+        password: userDetails.password,
+      },
+    });
+    return normalizeAuthResult(payload);
   },
 
-  /**
-   * OAuth 2.0 Social Login
-   */
-  async socialLogin(provider) {
-    // provider: 'google' | 'apple'
-    // TODO: Implement actual OAuth flow
-    return { success: true, token: 'mock-token', user: { name: `Social ${provider} User` } };
+  async getCurrentUser() {
+    const payload = await apiRequest('/users/me');
+    const user = payload?.user || payload?.data || payload;
+    updateSession({ user });
+    return user;
+  },
+
+  async updateProfile(profile) {
+    const payload = await apiRequest('/users/me', {
+      method: 'PATCH',
+      body: {
+        name: profile.displayName || profile.name,
+        displayName: profile.displayName,
+        bio: profile.bio,
+        location: profile.location,
+      },
+    });
+    const user = payload?.user || payload?.data || payload;
+    updateSession({ user });
+    return { success: true, user };
+  },
+
+  async socialLogin() {
+    throw new Error('Social login is not connected to a verified backend endpoint yet.');
   },
 };
 

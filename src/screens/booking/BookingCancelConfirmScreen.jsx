@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../router/routes";
+import { bookingApi } from "../../shared/api/bookingApi";
 
 const evzStyles = `
 :root {
@@ -309,16 +310,30 @@ export default function BookingCancelConfirmScreen() {
   const minutes = Number(getBooking("holdMinutes", "0"));
   const fee = Number(getBooking("holdFee", "0"));
   const rsv = getBooking("reservationId", "");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const feeLabel = useMemo(() => {
     const amt = Number.isFinite(fee) ? fee : 0;
     return `UGX ${amt.toLocaleString("en-UG")}`;
   }, [fee]);
 
-  const handleCancel = () => {
-    ["reservationId", "expiryAt", "method", "paid"].forEach(delBooking);
-    setBooking("status", "canceled");
-    navigate(ROUTES.DASHBOARD);
+  const handleCancel = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      if (rsv) {
+        await bookingApi.cancelBooking(rsv, { reason: "user_cancelled" });
+      }
+      ["reservationId", "expiryAt", "method", "paid"].forEach(delBooking);
+      setBooking("status", "canceled");
+      navigate(ROUTES.DASHBOARD);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Could not cancel this booking.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeep = () => {
@@ -360,6 +375,7 @@ export default function BookingCancelConfirmScreen() {
             Canceling releases your held pack immediately. Fees already paid are
             not refunded.
           </p>
+          {error && <p className="evz-caption" style={{ color: "#b91c1c" }}>{error}</p>}
         </section>
       </main>
 
@@ -376,8 +392,9 @@ export default function BookingCancelConfirmScreen() {
             type="button"
             className="evz-btn-primary"
             onClick={handleCancel}
+            disabled={loading}
           >
-            Cancel booking
+            {loading ? "Canceling..." : "Cancel booking"}
           </button>
         </div>
       </footer>
